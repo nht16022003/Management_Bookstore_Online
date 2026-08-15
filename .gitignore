@@ -1,0 +1,20 @@
+# Angular
+node_modules/
+dist/
+
+# ASP.NET Core
+bin/
+obj/
+
+# Visual Studio
+.vs/
+
+# VS Code
+.vscode/
+
+# User-specific
+*.user
+*.suo
+
+# Environment / secrets
+.env
