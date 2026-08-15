@@ -7,9 +7,9 @@ import { AccountModel } from '../../models/AccountModel';
 
 export class AccountService{
     constructor(private http: HttpClient) { }
-    getAccount(){
-        return this.http.get<AccountModel[]>
-        ("https://localhost:44314/api/Account");
+    getAccount(newAc: AccountModel){
+        return this.http.post<AccountModel[]>
+        ("https://localhost:44314/api/Account/login", newAc);
     }
     /**
      * upDateStudent(student: student)
