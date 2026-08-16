@@ -9,12 +9,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { HomePageComponent } from './UI/Page/home_page/home-page.component';
 import { Header } from './UI/Page/header/header.component';
+import { ListGroup } from './UI/Page/list_group/list_group.component';
+import { MainLayoutComponent } from './UI/Page/main-layout/main-layout.component';
 @NgModule({
   declarations: [
     AppComponent,
     LoginPageComponent,
     HomePageComponent,
-    Header
+    Header,
+    ListGroup,
+    MainLayoutComponent
     
   ],
   imports: [
