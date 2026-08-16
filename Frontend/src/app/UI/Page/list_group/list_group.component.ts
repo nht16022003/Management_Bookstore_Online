@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 
 import { CategoryModel } from "src/app/models/CategoryModel";
-import { CategoryService } from "src/app/services/Account_Service/Catogery.service";
+import { CategoryService } from "src/app/services/Category_Service/Catogery.service";
 
 @Component({
   selector: 'app-listgroup',
