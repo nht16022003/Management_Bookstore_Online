@@ -1,4 +1,6 @@
 ﻿using ManagementBTOnline_API.Models.AccountManagement;
+using ManagementBTOnline_API.Models.BookManagement;
+using ManagementBTOnline_API.Models.CategoryManagement;
 using ManagementBTOnline_API.Models.RolesManagement;
 using ManagementBTOnline_API.Models.UsersManagement;
 using Microsoft.EntityFrameworkCore;
@@ -20,5 +22,9 @@ namespace ManagementBTOnline_API.Data
         public DbSet<AccountModel>Accounts {  get; set; }
 
         public DbSet<UserModel>Users { get; set; }
+
+        public DbSet<CategoryModel> Categories { get; set; }
+
+        public DbSet<BookModel> Books { get; set; }
     }
 }
