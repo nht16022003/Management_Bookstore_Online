@@ -1,7 +1,6 @@
- <ul class="list-group">
-        <li class="list-group-item active" aria-current="true">An active item</li>
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
-        <li class="list-group-item">A fourth item</li>
-        <li class="list-group-item">And a fifth one</li>
+ <h5 style="text-align: center; background-color: blue;padding: 10px; color: white;;">DANH MỤC</h5>
+ <ul *ngFor="let item of catogeries" class="list-group">
+       
+        <li style="text-align: center;" class="list-group-item">{{item.categoryName}}</li>
+        <hr>
 </ul>

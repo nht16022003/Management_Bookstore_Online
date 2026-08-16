@@ -23,8 +23,8 @@ namespace ManagementBTOnline_API.Controllers
         public async Task<IActionResult> getAccount(AccountDTO dto)
         {
             var account = await _context.Accounts.
-                FirstOrDefaultAsync(a => a.USERNAME == dto.USERNAME &&
-                a.HashPassword == dto.HashPassword);
+                FirstOrDefaultAsync(a => a.userName == dto.userName &&
+                a.hashPassword == dto.hashPassword);
             if (account == null)
             {
                 return Unauthorized("Sai username hoặc password");

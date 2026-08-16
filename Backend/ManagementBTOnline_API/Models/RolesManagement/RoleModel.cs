@@ -7,8 +7,11 @@ namespace ManagementBTOnline_API.Models.RolesManagement
     public class RoleModel
     {
         [Key]
-        public int ID_ROLE { get; set; }
-        public string ROLE_NAME { get; set; }
+        [Column("ID_ROLE")]
+        public int id_Role { get; set; }
+
+        [Column("ROLE_NAME")]
+        public string roleName { get; set; }
     }
    
     

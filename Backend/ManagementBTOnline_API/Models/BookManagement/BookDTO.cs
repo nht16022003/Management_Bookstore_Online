@@ -4,13 +4,13 @@
     {
        
 
-        public string BOOK_NAME { get; set; }
+        public string bookName { get; set; }
 
-        public decimal? PRICE { get; set; }
+        public decimal? price { get; set; }
 
-        public string? DESCRIPTION { get; set; }
+        public string? description { get; set; }
 
-        public string? IMAGE_URL { get; set; }
+        public string? imageURL { get; set; }
 
 
     }

@@ -22,9 +22,9 @@ namespace ManagementBTOnline_API.Controllers
 
             var getogeries = await _context.Categories.Select(c => new CategoryDTO
             {
-                ID_CATEGORY = c.ID_CATEGORY,
-                CATEGORY_NAME = c.CATEGORY_NAME
-                
+                id_Category = c.id_Category,
+                categoryName = c.categoryName
+
             }).ToListAsync();
 
             return Ok(getogeries);

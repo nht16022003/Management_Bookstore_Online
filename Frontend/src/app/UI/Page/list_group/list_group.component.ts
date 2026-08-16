@@ -1,4 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+
+import { CategoryModel } from "src/app/models/CategoryModel";
+import { CategoryService } from "src/app/services/Account_Service/Catogery.service";
 
 @Component({
   selector: 'app-listgroup',
@@ -6,6 +9,21 @@ import { Component } from "@angular/core";
   styleUrls: ['./list_group.component.css'],
  
 })
-export class ListGroup {
- 
+export class ListGroupComponent implements OnInit{
+
+  catogeries: CategoryModel[] = [];
+  constructor( private categoryService: CategoryService){}
+
+  ngOnInit(): void {
+    this.categoryService.getCategories().subscribe(data =>
+    {
+      this.catogeries = data;
+      console.log(this.catogeries);
+    },
+    error => {
+      alert("Không lấy thành công thông tin danh mục!");
+    }
+    )
+  }
+
   };

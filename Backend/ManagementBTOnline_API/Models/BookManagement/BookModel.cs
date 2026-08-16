@@ -7,16 +7,17 @@ namespace ManagementBTOnline_API.Models.BookManagement
     public class BookModel
     {
         [Key]
-        public int? ID_BOOK { get; set; }   
-
-        public string BOOK_NAME { get; set; }
-
-        public decimal? PRICE { get; set; }
-
-        public string? ID_CATEGORY { get; set; }
-
-        public string? DESCRIPTION { get; set; }
-
-        public string? IMAGE_URL { get; set; }
+        [Column("ID_BOOK")]
+        public int? id_Book { get; set; }
+        [Column("BOOK_NAME")]
+        public string bookName { get; set; }
+        [Column("PRICE")]
+        public decimal? price { get; set; }
+        [Column("ID_CATEGORY")]
+        public string? id_Category { get; set; }
+        [Column("DESCRIPTION")]
+        public string? description { get; set; }
+        [Column("IMAGE_URL")]
+        public string? imageURL { get; set; }
     }
 }

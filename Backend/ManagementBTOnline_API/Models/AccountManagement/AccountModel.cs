@@ -1,18 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManagementBTOnline_API.Models.AccountManagement
 {
     [Table("ACCOUNTS")]
     public class AccountModel
     {
-        public int ID { get; set; }
-
-        public int? ID_USER { get; set; }
-
-        public string USERNAME { get; set; }
-
-        public string HashPassword { get; set; }
-
-        public bool STATUS {  get; set; }
+        [Key]
+        [Column("ID")]
+        public int id { get; set; }
+        [Column("ID_USER")]
+        public int? id_USER { get; set; }
+        [Column("USERNAME")]
+        public string userName { get; set; }
+        [Column("HashPassword")]
+        public string hashPassword { get; set; }
+        [Column("STATUS")]
+        public bool status {  get; set; }
     }
 }

@@ -7,8 +7,9 @@ namespace ManagementBTOnline_API.Models.CategoryManagement
     public class CategoryModel
     {
         [Key]
-        public string? ID_CATEGORY { get; set; }
-
-        public string? CATEGORY_NAME { get; set; }
+        [Column("ID_CATEGORY")]
+        public string? id_Category { get; set; }
+        [Column("CATEGORY_NAME")]
+        public string? categoryName { get; set; }
     }
 }
