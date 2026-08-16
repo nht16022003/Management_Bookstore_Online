@@ -148,25 +148,20 @@ VALUES
  150000,
  'CN',
  N'Giáo trình giới thiệu các kiến thức nền tảng của ngôn ngữ C#, bao gồm biến, kiểu dữ liệu, câu điều kiện, vòng lặp, phương thức và lập trình hướng đối tượng.',
- N'https://placehold.co/400x600?text=CSharp'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkv1EgYN7LRdwdzKqg6LtL15BamKLzFyLeQYlxJ9wX_A&s=10'),
 
 (N'ASP.NET Core Web API',
  180000,
  'CN',
  N'Cuốn sách hướng dẫn xây dựng Web API với ASP.NET Core, Entity Framework Core, REST API và kết nối cơ sở dữ liệu.',
- N'https://placehold.co/400x600?text=ASP.NET+Core'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRji5nqv-eqH5OXAz23QT_SdvYDwhvkcjx3HknWY2VD0A&s=10'),
 
-(N'Angular Cơ Bản',
- 160000,
- 'CN',
- N'Tài liệu giới thiệu Angular từ những kiến thức cơ bản như Component, Module, Binding, Service, Routing đến việc kết nối API.',
- N'https://placehold.co/400x600?text=Angular'),
 
 (N'SQL Server Thực Chiến',
  145000,
  'CN',
  N'Giới thiệu cách thiết kế cơ sở dữ liệu, truy vấn SQL, khóa chính, khóa ngoại, JOIN, Stored Procedure và các kỹ thuật quản lý dữ liệu.',
- N'https://placehold.co/400x600?text=SQL+Server'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIIDydY1AxizYs3zJ_MfSozXuocsAO9yCE5hknOVC5KQ&s=10'),
 
 
 -- Kỹ năng sống
@@ -174,51 +169,51 @@ VALUES
  85000,
  'KNS',
  N'Cuốn sách tập trung vào nghệ thuật giao tiếp, cách xây dựng mối quan hệ và cách ứng xử hiệu quả với những người xung quanh.',
- N'https://placehold.co/400x600?text=Dac+Nhan+Tam'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfDoQPhPDskeL0xO7aWWDTGu6Tubq6lIh7XfYCyDdLgQ&s=10'),
 
 (N'Atomic Habits',
  125000,
  'KNS',
  N'Cuốn sách trình bày phương pháp xây dựng những thói quen nhỏ và duy trì chúng để tạo ra những thay đổi tích cực trong cuộc sống.',
- N'https://placehold.co/400x600?text=Atomic+Habits'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRT-udB1hsUxyaw3urGNX7NrPI4idvVIq5i4FJrnyR0Kw&s=10'),
 
 (N'7 Thói Quen Hiệu Quả',
  130000,
  'KNS',
  N'Giới thiệu các nguyên tắc giúp cá nhân chủ động hơn, quản lý thời gian tốt hơn và xây dựng các mối quan hệ hiệu quả.',
- N'https://placehold.co/400x600?text=7+Thoi+Quen'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVIpCOMCH4Olfo5pWeoddArIgmwhI13E8s8dQa8Gc5GQ&s=10'),
 
 (N'Đời Ngắn Đừng Ngủ Dài',
  90000,
  'KNS',
  N'Những câu chuyện và góc nhìn giúp người đọc suy nghĩ tích cực hơn, biết trân trọng thời gian và chủ động theo đuổi mục tiêu.',
- N'https://placehold.co/400x600?text=Doi+Ngan+Dung+Ngu+Dai'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTF7V-iTjiNP9O0z2G9oDcQLuXJxuUtoAb2ki_MdBRBFg&s=10'),
 
 
 -- Thiếu nhi
 (N'Hoàng Tử Bé',
  75000,
- 'CAT005',
+ 'TN',
  N'Một câu chuyện giàu tính biểu tượng về hành trình của một hoàng tử nhỏ qua nhiều hành tinh và những con người khác nhau.',
- N'https://placehold.co/400x600?text=Hoang+Tu+Be'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO_QLnbh7GuYEKfFWQm_aBUDPHdQAgYZ1TIIvbPIL9eA&s'),
 
 (N'Harry Potter Và Hòn Đá Phù Thủy',
  140000,
- 'CAT005',
+ 'TN',
  N'Câu chuyện mở đầu cho hành trình khám phá thế giới phù thủy của Harry Potter tại trường Hogwarts.',
- N'https://placehold.co/400x600?text=Harry+Potter'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLPEb3XnsezHhSjfo7GxtyvlsLEwvKxebCwRIAA2MWvA&s=10'),
 
 (N'Không Gia Đình',
  100000,
- 'CAT005',
+ 'TN',
  N'Câu chuyện về hành trình trưởng thành của một cậu bé qua nhiều hoàn cảnh khó khăn và những cuộc gặp gỡ trong cuộc sống.',
- N'https://placehold.co/400x600?text=Khong+Gia+Dinh'),
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzDz7a70OGfnV0raYelPgne4AnUbx0QSbvlYPM7NgyYQ&s=10'),
 
 (N'Truyện Cổ Tích Việt Nam',
  70000,
- 'CAT005',
+ 'TN',
  N'Tuyển tập những câu chuyện cổ tích quen thuộc của Việt Nam, phù hợp với trẻ em và mang nhiều bài học về cuộc sống.',
- N'https://placehold.co/400x600?text=Truyen+Co+Tich');
+ N'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPe54nF28603mhGxNlmZvEYlq5X8cFddAaNX_hQl81dA&s=10');
 
 DROP TABLE STAFFS;
 DROP TABLE CUSTOMERS;
