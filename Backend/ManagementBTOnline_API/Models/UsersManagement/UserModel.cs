@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Principal;
 
 namespace ManagementBTOnline_API.Models.UsersManagement
@@ -6,6 +7,7 @@ namespace ManagementBTOnline_API.Models.UsersManagement
     [Table("USERS")]
     public class UserModel
     {
+        [Key]
        public int ID_USER {  get; set; } 
 	   public int ID_ROLE {  get; set; }
 

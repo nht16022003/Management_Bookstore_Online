@@ -8,12 +8,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { FormsModule } from '@angular/forms';
 import { HomePageComponent } from './UI/Page/home_page/home-page.component';
-
+import { Header } from './UI/Page/header/header.component';
 @NgModule({
   declarations: [
     AppComponent,
     LoginPageComponent,
-    HomePageComponent
+    HomePageComponent,
+    Header
+    
   ],
   imports: [
     BrowserModule,

@@ -7,7 +7,7 @@ namespace ManagementBTOnline_API.Models.AccountManagement
     {
         public int ID { get; set; }
 
-        public int ID_USER { get; set; }
+        public int? ID_USER { get; set; }
 
         public string USERNAME { get; set; }
 

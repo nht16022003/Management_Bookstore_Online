@@ -2,5 +2,8 @@
 {
     public class AccountDTO
     {
+        public string USERNAME { get; set; }    
+
+        public string HashPassword { get; set; }
     }
 }
