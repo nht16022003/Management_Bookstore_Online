@@ -12,15 +12,32 @@
 <br>
 
 <div class="container">
-  <div class="row">
-    <div class="col">
-      Column
+    <div  class="row g-4">
+        <div *ngFor="let item of books" class="col-3">
+            <div class="card">
+                <img [src]="item.imageURL" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">{{item.bookName}}</h5>
+                    <p class="card-text">{{item.description}}</p>
+                    <h6 style="font-weight: bold;">Giá: <span>{{item.price}}</span></h6>
+                  
+                </div>
+                <div class="card-footer">
+                     <div class="row">
+                        <div class="col-6">
+                            <a href="#" class="btn btn-primary">Mua Ngay</a>
+                        </div>
+                        <!--
+                        <a routerLink="/products" class="btn btn-primary">
+                            Go somewhere
+                        </a>
+                        -->
+                        <div class="col-6">
+                            <a href="#" class="btn btn-danger">Xem chi tiết</a>
+                        </div>
+                   </div>
+                  </div>
+                </div>
+            </div>
     </div>
-    <div class="col">
-      Column
-    </div>
-    <div class="col">
-      Column
-    </div>
-  </div>
 </div>

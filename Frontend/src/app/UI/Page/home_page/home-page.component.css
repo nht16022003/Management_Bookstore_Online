@@ -1,0 +1,18 @@
+.card{
+    height: 600px;
+    margin-top: 10px;
+    width: 100%;
+}
+.row{
+    justify-content: center;
+}
+.card-img-top{
+    height: 15rem;
+}
+p{
+    font-size: small;
+    color:gray;
+}
+.btn{
+    width: 100%;
+}
