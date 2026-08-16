@@ -1,6 +1,6 @@
 export interface BookModel{
-    BOOK_NAME:string,
-    PRICE:number,
-    DESCRIPTION:string,
-    IMAGE_URL:string
+    bookName:string,
+    price:number,
+    description:string,
+    imageURL:string
 }
