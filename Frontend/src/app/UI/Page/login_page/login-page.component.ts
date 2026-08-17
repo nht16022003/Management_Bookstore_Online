@@ -44,6 +44,6 @@ export class LoginPageComponent {
       //Login thất bại
       alert('Sai thông tin đăng nhập');
     } 
-  )
-  }
+    )
+    }
 }
