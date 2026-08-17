@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginPageComponent } from './UI/Page/login_page/login-page.component';
 import { HomePageComponent } from './UI/Page/home_page/home-page.component';
 import { MainLayoutComponent } from './UI/Page/main-layout/main-layout.component';
+import { ListProductComponent } from './UI/Page/product/list-product/list-product.component';
 
 const routes: Routes = [
 
@@ -23,6 +24,10 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginPageComponent
+  }, 
+  {
+    path: 'listproduct',
+    component: ListProductComponent
   }
 
 ];

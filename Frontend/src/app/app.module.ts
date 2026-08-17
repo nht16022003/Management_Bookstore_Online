@@ -18,7 +18,8 @@ import { MainLayoutComponent } from './UI/Page/main-layout/main-layout.component
     HomePageComponent,
     Header,
     ListGroupComponent,
-    MainLayoutComponent
+    MainLayoutComponent,
+    ListGroupComponent
     
   ],
   imports: [

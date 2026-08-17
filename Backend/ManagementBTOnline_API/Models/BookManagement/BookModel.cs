@@ -19,5 +19,7 @@ namespace ManagementBTOnline_API.Models.BookManagement
         public string? description { get; set; }
         [Column("IMAGE_URL")]
         public string? imageURL { get; set; }
+        [Column("QUANTITY")]
+        public int? quantity { get; set; }
     }
 }

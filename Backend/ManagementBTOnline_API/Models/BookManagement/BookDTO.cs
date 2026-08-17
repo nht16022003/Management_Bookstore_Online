@@ -12,6 +12,7 @@
 
         public string? imageURL { get; set; }
 
+        public int? quantity { get; set; }
 
     }
 }

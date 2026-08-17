@@ -25,7 +25,8 @@ namespace ManagementBTOnline_API.Controllers
                 bookName = b.bookName,
                 price = b.price,
                 description = b.description,
-                imageURL = b.imageURL
+                imageURL = b.imageURL,
+                quantity = b.quantity
             }).ToArrayAsync();
             return Ok(books);
         }
