@@ -16,3 +16,14 @@ p{
 .btn{
     width: 100%;
 }
+.container{
+    background-color: rgba(219, 216, 216, 0.203);
+    border-radius: 2%;
+    box-shadow:
+        inset 3px 3px 8px rgba(181, 179, 179, 0.151), /*phải dưới mờ*/
+        inset 3px 3px 8px rgba(151, 152, 151, 0.8);
+}
+.card:hover{
+    scale: calc(1.02);
+    transition: 0.3s;
+}

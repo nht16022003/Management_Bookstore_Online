@@ -1,4 +1,6 @@
-<div class="container text-center">
+<div class="container">
+    <br>
+    <div class="text-center">
     <iframe
         width="600"
         height="315"
@@ -11,9 +13,9 @@
 </div>
 <br>
 
-<div class="container">
+<div class="">
     <div  class="row g-4">
-        <div *ngFor="let item of books" class="col-3">
+        <div *ngFor="let item of pagedBooks" class="col-3">
             <div class="card">
                 <img [src]="item.imageURL" class="card-img-top" alt="...">
                 <div class="card-body">
@@ -40,4 +42,56 @@
                 </div>
             </div>
     </div>
+</div>
+<nav class="mt-4">
+
+    <ul class="pagination justify-content-center">
+
+        <!-- Previous -->
+        <li
+            class="page-item"
+            [class.disabled]="currentPage === 1">
+
+            <button
+                class="page-link"
+                (click)="changePage(currentPage - 1)">
+                Previous
+            </button>
+
+        </li>
+
+
+        <!-- Pages -->
+        <li
+            *ngFor="let page of [].constructor(totalPage); let i = index"
+            class="page-item"
+            [class.active]="currentPage === i + 1">
+
+            <button
+                class="page-link"
+                (click)="changePage(i + 1)">
+
+                {{ i + 1 }}
+
+            </button>
+
+        </li>
+
+
+        <!-- Next -->
+        <li
+            class="page-item"
+            [class.disabled]="currentPage === totalPage">
+
+            <button
+                class="page-link"
+                (click)="changePage(currentPage + 1)">
+                Next
+            </button>
+
+        </li>
+
+    </ul>
+
+</nav>
 </div>

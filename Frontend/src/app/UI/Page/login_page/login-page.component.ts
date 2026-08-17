@@ -13,8 +13,11 @@ import { Router } from '@angular/router';
 })
 export class LoginPageComponent {
    newAc:AccountModel={
-    USERNAME:"",
-    HashPassword:""
+    userName:"",
+    hashPassword:"",
+    id:0,
+    id_USER:0,
+    status:true
   };
 
   constructor(private accountservice: AccountService,
