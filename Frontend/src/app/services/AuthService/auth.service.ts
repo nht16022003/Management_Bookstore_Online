@@ -7,12 +7,12 @@ import { AccountService } from "../Account_Service/Account.service";
 })
 export class AuthService{
     private loggedIn = false; 
-    private account: AccountModel | null = null;
+    private account: AccountModel | null = null; //property của AuthService
 
     login(account: AccountModel): void
     {
         //api trả response = account: AccountModel
-        this.account = account; //account khai báo sẽ là account được reponse dìa
+        this.account = account; //account khai báo sẽ là account được reponse dìa, lưu account vào AuthSerice 
 
         localStorage.setItem(
             'account',

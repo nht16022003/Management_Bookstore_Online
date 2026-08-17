@@ -1,0 +1,8 @@
+error.status            Meaning 
+200                     Thành công 
+400                     Bad request - Dữ liệu sai 
+401                     Unauthrized - chưa xác thực/ sai tài khoản 
+403                     Forbidden - đã đăng nhập nhưng không có quyền 
+404                     Không tìm thấy API/resource 
+500                     Lỗi bên server 
+0                       Thường là không kết nối được server/ CORS/network

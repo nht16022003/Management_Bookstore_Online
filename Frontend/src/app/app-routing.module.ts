@@ -5,6 +5,7 @@ import { LoginPageComponent } from './UI/Page/login_page/login-page.component';
 import { HomePageComponent } from './UI/Page/home_page/home-page.component';
 import { MainLayoutComponent } from './UI/Page/main-layout/main-layout.component';
 import { ListProductComponent } from './UI/Page/product/list-product/list-product.component';
+import { ErrorComponent } from './UI/Page/errors_page/errors_page.component';
 
 const routes: Routes = [
 
@@ -29,6 +30,10 @@ const routes: Routes = [
     path: 'login',
     component: LoginPageComponent
   }, 
+  {
+    path:'error',
+    component: ErrorComponent
+  }
   
 
 ];

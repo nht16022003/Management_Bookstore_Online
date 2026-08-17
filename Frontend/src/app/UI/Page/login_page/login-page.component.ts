@@ -40,10 +40,14 @@ export class LoginPageComponent {
     this.authservice.login(response);
     this.router.navigate(['/'])
     },
+    
+     
     error => {
       //Login thất bại
-      alert('Sai thông tin đăng nhập');
+      this.router.navigate(['/error']);
     } 
+     
+     
     )
     }
 }
