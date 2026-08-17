@@ -27,7 +27,9 @@ export class HomePageComponent implements OnInit{
    ){}
 
    ngOnInit(): void {
-     this.bookService.getBooks().subscribe(
+     
+      
+       this.bookService.getBooks().subscribe(
       data => {
         this.books = data;
         console.log(this.books);
@@ -36,7 +38,11 @@ export class HomePageComponent implements OnInit{
         alert("Không load được sách");
       }
      )
+      
+
+     
    }
+   
 
    //Phân loại Role đê hiển thị button edit 
    checkRole():boolean{

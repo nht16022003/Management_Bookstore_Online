@@ -14,5 +14,9 @@
 
         public int? quantity { get; set; }
 
+        public string? id_Category { get; set; }
+        
+        public string? category_Name { get; set; }
+
     }
 }

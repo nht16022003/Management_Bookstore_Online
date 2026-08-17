@@ -2,17 +2,26 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BookModel } from 'src/app/models/BookModel';
 
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class BookService{
     constructor(private http: HttpClient) { }
+
+    
     
     getBooks(){
         return this.http.get<BookModel[]>
         ("https://localhost:44314/api/Book");
     }
+
+    
+    }
+
+    
+    
     /**
      * upDateStudent(student: student)
     {
@@ -30,4 +39,3 @@ export class BookService{
         (`https://localhost:44375/api/student`, student);
     }
      */
-}

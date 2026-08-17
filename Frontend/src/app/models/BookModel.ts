@@ -3,5 +3,7 @@ export interface BookModel{
     price:number,
     description:string,
     imageURL:string,
-    quantity:number
+    quantity:number,
+    id_Category:string,
+    category_Name:string
 }

@@ -16,6 +16,10 @@ const routes: Routes = [
       {
         path: '',
         component: HomePageComponent
+      },
+      {
+        path: 'listproduct',
+        component: ListProductComponent
       }
     ]
   },
@@ -25,10 +29,7 @@ const routes: Routes = [
     path: 'login',
     component: LoginPageComponent
   }, 
-  {
-    path: 'listproduct',
-    component: ListProductComponent
-  }
+  
 
 ];
 

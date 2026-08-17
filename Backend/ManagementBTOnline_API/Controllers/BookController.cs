@@ -28,7 +28,49 @@ namespace ManagementBTOnline_API.Controllers
                 imageURL = b.imageURL,
                 quantity = b.quantity
             }).ToArrayAsync();
-            return Ok(books);
+
+            var result = await (
+                from c in _context.Categories
+                join b in _context.Books on c.id_Category equals b.id_Category
+                select new BookDTO
+                {
+                    bookName = b.bookName,
+
+                    price = b.price,
+
+                    description = b.description,
+
+                    imageURL = b.imageURL,
+
+                    quantity = b.quantity,
+
+                    id_Category = c.id_Category,
+
+                    category_Name = c.categoryName
+                }
+                ).ToArrayAsync();
+                
+                /*
+                 var result = await (
+                  from a in _context.TableA
+
+                  join b in _context.TableB
+                      on a.KeyA equals b.KeyB
+
+                  join c in _context.TableC
+                      on b.KeyB2 equals c.KeyC
+
+                  where  điều kiện nếu có 
+
+                          select new MyDTO
+                          {
+                              Property1 = a.Column1,
+                              Property2 = b.Column2,
+                              Property3 = c.Column3
+                          }
+              ).ToListAsync();*/
+
+            return Ok(result);
         }
     
     }
