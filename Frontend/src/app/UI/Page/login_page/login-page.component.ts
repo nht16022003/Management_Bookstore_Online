@@ -3,6 +3,7 @@ import { AccountModel } from 'src/app/models/AccountModel';
 import { AccountService } from 'src/app/services/Account_Service/Account.service';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/AuthService/auth.service';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class LoginPageComponent {
   };
 
   constructor(private accountservice: AccountService,
-    private router:Router
+    private router:Router,
+    private authservice:AuthService
   ){
 
   }
@@ -30,6 +32,8 @@ export class LoginPageComponent {
   {
    this.accountservice.getAccount(this.newAc).subscribe(response =>{
     console.log("Succes");
+    //Đăng nhập thành công !
+    this.authservice.login();
     this.router.navigate(['/home'])
     },
     error => {
