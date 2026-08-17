@@ -47,7 +47,7 @@ namespace ManagementBTOnline_API.Controllers
                         roleName = d.roleName, 
                         userId = u.ID_USER
                     }
-                ).ToArrayAsync();
+                ).FirstOrDefaultAsync(); 
 
             if (result == null)
             {

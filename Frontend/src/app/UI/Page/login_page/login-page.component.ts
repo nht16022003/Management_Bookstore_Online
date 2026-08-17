@@ -18,7 +18,11 @@ export class LoginPageComponent {
     hashPassword:"",
     id:0,
     id_USER:0,
-    status:true
+    status:true, 
+    accountName:"",
+    roleName:"",
+    roleId: 0,
+    userId:0
   };
 
   constructor(private accountservice: AccountService,
@@ -31,9 +35,9 @@ export class LoginPageComponent {
   login()
   {
    this.accountservice.getAccount(this.newAc).subscribe(response =>{
-    console.log("Succes");
+    console.log(response);
     //Đăng nhập thành công !
-    this.authservice.login();
+    this.authservice.login(response);
     this.router.navigate(['/home'])
     },
     error => {

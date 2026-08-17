@@ -31,9 +31,20 @@
 
                     </ul>
 
-                    <div>
+                    <div *ngIf="isLoggined()">
+                        <a href="#" class="btn btn-outline-primary">
+                           {{accountReturned.userName}}
+                        </a>
                         <a href="#" class="btn btn-outline-primary">
                             Register
+                        </a>
+                    </div>
+                       <div *ngIf="!isLoggined()">
+                        <a href="#" class="btn btn-outline-primary">
+                            TT
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            Thông Tin
                         </a>
                     </div>
 

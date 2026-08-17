@@ -8,7 +8,7 @@ import { AccountModel } from '../../models/AccountModel';
 export class AccountService{
     constructor(private http: HttpClient) { }
     getAccount(newAc: AccountModel){
-        return this.http.post<AccountModel[]>
+        return this.http.post<AccountModel>
         ("https://localhost:44314/api/Account/login", newAc);
     }
     /**

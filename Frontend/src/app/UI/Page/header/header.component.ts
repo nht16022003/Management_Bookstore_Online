@@ -1,5 +1,8 @@
 import { Component } from "@angular/core";
+import { AccountModel } from "src/app/models/AccountModel";
+import { AccountService } from "src/app/services/Account_Service/Account.service";
 import { AuthService } from "src/app/services/AuthService/auth.service";
+import { LoginPageComponent } from "../login_page/login-page.component";
 
 @Component({
   selector: 'app-header',
@@ -9,13 +12,39 @@ import { AuthService } from "src/app/services/AuthService/auth.service";
 })
 export class Header {
 
-    constructor(private authservice:AuthService){}
+    accountLoggined:AccountModel | null = null;
 
-    checkLogin:boolean = false; 
-
-    isLoggined()
+    constructor(private authservice:AuthService,
+        private accountService:AccountService,)
     {
-        this.authservice.isLoggedIn();
+        
     }
+
+    
+
+    isLoggined():boolean
+    {
+       
+        return this.authservice.isLoggedIn(); //nếu login thành công trả về true
+    }
+    
+    returnAccountInFo():AccountModel | null{
+    
+       if(this.isLoggined())
+       {
+         this.accountLoggined = this.authservice.getAccount();
+         return this.accountLoggined;
+        
+        }
+        return null;
+    }
+
+    accountReturned = this.returnAccountInFo();
+
+    isLoggout():void{
+        this.authservice.logout();
+    }
+
+  
 
   };

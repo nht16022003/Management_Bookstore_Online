@@ -5,4 +5,8 @@ export interface AccountModel{
     id:number;
     id_USER:number;
     status:boolean;
+    accountName:string;
+    roleName:string;
+    roleId: number;
+    userId:number;
 }
