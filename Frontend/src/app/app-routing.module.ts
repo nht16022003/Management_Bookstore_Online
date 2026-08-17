@@ -6,26 +6,25 @@ import { HomePageComponent } from './UI/Page/home_page/home-page.component';
 import { MainLayoutComponent } from './UI/Page/main-layout/main-layout.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: LoginPageComponent
-  },
+
+  // localhost:4200/ → MainLayout → HomePage
   {
     path: '',
     component: MainLayoutComponent,
     children: [
       {
-        path: 'home',
+        path: '',
         component: HomePageComponent
       }
     ]
-
   },
+
+  // localhost:4200/login → LoginPage
   {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    path: 'login',
+    component: LoginPageComponent
   }
+
 ];
 
 @NgModule({

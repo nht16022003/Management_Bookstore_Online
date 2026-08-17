@@ -3,6 +3,7 @@ import { AccountModel } from "src/app/models/AccountModel";
 import { AccountService } from "src/app/services/Account_Service/Account.service";
 import { AuthService } from "src/app/services/AuthService/auth.service";
 import { LoginPageComponent } from "../login_page/login-page.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-header',
@@ -15,7 +16,8 @@ export class Header {
     accountLoggined:AccountModel | null = null;
 
     constructor(private authservice:AuthService,
-        private accountService:AccountService,)
+        private accountService:AccountService,
+        private router: Router)
     {
         
     }
@@ -43,6 +45,8 @@ export class Header {
 
     isLoggout():void{
         this.authservice.logout();
+        localStorage.clear();
+        this.router.navigate(['/login']);
     }
 
   

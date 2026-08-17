@@ -31,20 +31,51 @@
 
                     </ul>
 
-                    <div *ngIf="isLoggined()">
-                        <a href="#" class="btn btn-outline-primary">
-                           {{accountReturned.userName}}
-                        </a>
-                        <a href="#" class="btn btn-outline-primary">
-                            Register
-                        </a>
-                    </div>
+                   <div *ngIf="isLoggined()">
+
+                            <div class="row">
+                                <div class="col"
+                                    style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+
+                                    <div class="dropdown">
+                                        <button
+                                            class="btn btn-secondary dropdown-toggle"
+                                            type="button"
+                                            id="dropdownMenu2"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                            {{accountReturned.userName}}
+                                        </button>
+
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                            <li>
+                                                <button class="dropdown-item" type="button">
+                                                    Thông tin
+                                                </button>
+                                            </li>
+                                             <li>
+                                                <button class="dropdown-item" type="button" (click)="isLoggout()">
+                                                    Đăng xuất
+                                                </button>
+                                            </li>
+                                        </ul>
+                                        
+                                    </div>
+
+                                    <h6 style="margin: 0; text-align: center;">
+                                        {{accountReturned.roleName}}
+                                    </h6>
+
+                                </div>
+                            </div>
+
+                        </div>
                        <div *ngIf="!isLoggined()">
-                        <a href="#" class="btn btn-outline-primary">
-                            TT
+                        <a routerLink="/login" class="btn btn-outline-primary">
+                            Đăng nhập
                         </a>
                         <a href="#" class="btn btn-outline-primary">
-                            Thông Tin
+                            Đăng ký
                         </a>
                     </div>
 

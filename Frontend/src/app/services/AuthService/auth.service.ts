@@ -13,6 +13,11 @@ export class AuthService{
     {
         //api trả response = account: AccountModel
         this.account = account; //account khai báo sẽ là account được reponse dìa
+
+        localStorage.setItem(
+            'account',
+            JSON.stringify(account)
+        );
     }
 
     logout():void
@@ -22,10 +27,25 @@ export class AuthService{
 
     isLoggedIn():boolean{
         
-        return this.account != null; //trả về true nếu account != null
+        return this.getAccount() != null; //trả về true nếu account != null
     }
 
     getAccount(): AccountModel | null{
+        //Trường hợp ban đầu đã login lần đầu
+       if(this.account != null)
+       {
         return this.account;
+       }
+
+       //Trường hợp reload lại trang thì xem như login chưa có gì, cần lấy account trên 
+       //localstorage để tiếp tục trạng thái login
+
+       const data = localStorage.getItem('account');
+
+       if(data != null)
+       {
+        this.account = JSON.parse(data);
+       }
+       return this.account;
     }
 }

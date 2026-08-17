@@ -38,7 +38,7 @@ export class LoginPageComponent {
     console.log(response);
     //Đăng nhập thành công !
     this.authservice.login(response);
-    this.router.navigate(['/home'])
+    this.router.navigate(['/'])
     },
     error => {
       //Login thất bại
