@@ -6,6 +6,7 @@ import { Route } from '@angular/router';
 import { BookModel } from 'src/app/models/BookModel';
 import { BookService } from 'src/app/services/Book_Service/book.service';
 import { LoginPageComponent } from '../login_page/login-page.component';
+import { AuthService } from 'src/app/services/AuthService/auth.service';
 
 
 @Component({
@@ -21,7 +22,9 @@ export class HomePageComponent implements OnInit{
    currentPage:number = 1;
    pageSize: number = 8;
 
-   constructor( private bookService: BookService){}
+   constructor( private bookService: BookService,
+    private authservice: AuthService
+   ){}
 
    ngOnInit(): void {
      this.bookService.getBooks().subscribe(
@@ -33,6 +36,15 @@ export class HomePageComponent implements OnInit{
         alert("Không load được sách");
       }
      )
+   }
+
+   //Phân loại Role đê hiển thị button edit 
+   checkRole():boolean{
+    if(this.authservice.getAccount()?.roleName=="ADMIN")
+    {
+      return true;
+    }
+    return false;
    }
 
    /**Phân trang */

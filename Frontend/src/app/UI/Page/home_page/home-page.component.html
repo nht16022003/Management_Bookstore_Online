@@ -25,7 +25,7 @@
                     <h6 style="font-weight: bold;">Giá: <span>{{item.price}}</span></h6>
                   
                 </div>
-                <div class="card-footer">
+                <div *ngIf="!checkRole()" class="card-footer">
                      <div class="row">
                         <div class="col-6">
                             <a href="#" class="btn btn-primary">Mua Ngay</a>
@@ -38,6 +38,20 @@
                         <div class="col-6">
                             <a href="#" class="btn btn-danger">Xem chi tiết</a>
                         </div>
+                   </div>
+                  </div>
+           
+                 <div *ngIf="checkRole()" class="card-footer">
+                     <div class="row">
+                        <div class="col-6">
+                            <a href="#" class="btn btn-primary">Edit</a>
+                        </div>
+                        <!--
+                        <a routerLink="/products" class="btn btn-primary">
+                            Go somewhere
+                        </a>
+                        -->
+                        
                    </div>
                   </div>
                 </div>

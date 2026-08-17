@@ -1,8 +1,35 @@
-<div class="lgr">
+<div *ngIf="!checkRole()" class="lgr">
          <h5 style="text-align: center; background-color: blue;padding: 10px; color: white;;">DANH MỤC</h5>
  <ul *ngFor="let item of catogeries" class="list-group">
        
         <li style="text-align: center;" class="list-group-item">{{item.categoryName}}</li>
         <hr>
 </ul>
+</div>
+<div *ngIf="checkRole()" class="lgr">
+         <h5 style="text-align: center; background-color: blue;padding: 10px; color: white;;">QUẢN LÝ</h5>
+        <ul class="list-group">
+
+                <li
+                        class="list-group-item list-group-item-action"
+                        style="text-align: center;"
+                        routerLink="/products">
+                        Xem danh sách sản phẩm
+                </li>
+
+                <li
+                        class="list-group-item list-group-item-action"
+                        style="text-align: center;"
+                        routerLink="/invoices">
+                        Xem danh sách hóa đơn
+                </li>
+
+                <li
+                        class="list-group-item list-group-item-action"
+                        style="text-align: center;"
+                        routerLink="/employees">
+                        Xem danh sách nhân viên
+                </li>
+
+        </ul>
 </div>
