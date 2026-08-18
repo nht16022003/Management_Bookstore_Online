@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ManagementBTOnline_API.Models.UsersManagement;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManagementBTOnline_API.Models.RolesManagement
@@ -12,6 +13,10 @@ namespace ManagementBTOnline_API.Models.RolesManagement
 
         [Column("ROLE_NAME")]
         public string roleName { get; set; }
+
+        //Navigation Property
+        public ICollection<UserModel> Users { get; set; } 
+        //một role có nhiều users
     }
    
     

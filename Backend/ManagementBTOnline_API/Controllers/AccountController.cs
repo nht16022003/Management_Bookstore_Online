@@ -3,6 +3,7 @@ using ManagementBTOnline_API.Models.AccountManagement;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 
 namespace ManagementBTOnline_API.Controllers
@@ -28,28 +29,47 @@ namespace ManagementBTOnline_API.Controllers
                 a.hashPassword == dto.hashPassword);
              */
 
+            /*
+                var data = await _context.EntityChinh
+                .Include(x => x.EntityLienQuan)
+                .ToListAsync();
+
+             */
+            var data = await _context.Accounts.Include(x => x.User).ThenInclude(b => b.Role).
+                Where(x => x.userName == dto.userName && x.hashPassword == dto.hashPassword)
+                .Select(x => new AccountDTO
+                {
+                    userName = x.User.user_Name,
+                    id = x.id,
+                    id_USER = x.User.id_User,
+                    status = x.status,
+                    accountName = x.userName,
+                    roleName = x.User.Role.roleName, 
+                    userId = x.User.id_User,
+                }).FirstOrDefaultAsync();
+                
 
             var result = await (
                     from a in _context.Accounts
                     join u in _context.Users
-                        on a.id_USER equals u.ID_USER
+                        on a.id_USER equals u.id_User
                     join d in _context.Roles
-                        on u.ID_ROLE equals d.id_Role
+                        on u.id_Role equals d.id_Role
                     where a.userName == dto.userName
                         && a.hashPassword == dto.hashPassword
                     select new AccountDTO
                     {
-                        userName = u.USER_NAME,
+                        userName = u.user_Name,
                         id = a.id,
-                        id_USER = u.ID_USER, 
+                        id_USER = u.id_User, 
                         status = a.status, 
                         accountName = a.userName,
                         roleName = d.roleName, 
-                        userId = u.ID_USER
+                        userId = u.id_User
                     }
                 ).FirstOrDefaultAsync(); 
 
-            if (result == null)
+            if (data == null)
             {
                 return Unauthorized("Sai username hoặc password");
             }
@@ -73,7 +93,7 @@ namespace ManagementBTOnline_API.Controllers
                               Property3 = c.Column3
                           }
               ).ToListAsync();*/
-            return Ok(result);
+            return Ok(data);
         }
 
 

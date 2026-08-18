@@ -26,5 +26,30 @@ namespace ManagementBTOnline_API.Data
         public DbSet<CategoryModel> Categories { get; set; }
 
         public DbSet<BookModel> Books { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AccountModel>().
+                HasOne(a => a.User).
+                WithOne(u => u.Account)
+                .HasForeignKey<AccountModel>(a => a.id_USER);
+
+            modelBuilder.Entity<UserModel>().
+                HasOne(a => a.Role).
+                WithMany(u => u.Users).
+                HasForeignKey(a => a.id_Role);
+
+            modelBuilder.Entity<CategoryModel>().
+                HasMany(a => a.Book).
+                WithOne(u => u.Category).
+                HasForeignKey(a => a.id_Category);
+
+            modelBuilder.Entity<BookModel>().
+                HasOne(a => a.Category).
+                WithMany(u => u.Book).
+                HasForeignKey(a => a.id_Category);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ManagementBTOnline_API.Models.UsersManagement;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManagementBTOnline_API.Models.AccountManagement
@@ -17,5 +18,7 @@ namespace ManagementBTOnline_API.Models.AccountManagement
         public string hashPassword { get; set; }
         [Column("STATUS")]
         public bool status {  get; set; }
+
+        public UserModel User { get; set; }
     }
 }

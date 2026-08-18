@@ -7,11 +7,11 @@ import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-errors',
-  templateUrl: './errors_page.component.html',
-  styleUrls: ['./errors_page.component.css'],
+  templateUrl: './server-error-page.component.html',
+  styleUrls: ['./server-error-page.component.css'],
  
 })
-export class ErrorComponent {
+export class ServerErrorComponent {
 
   
 

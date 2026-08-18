@@ -22,9 +22,6 @@ export class ListGroupComponent implements OnInit{
     {
       this.catogeries = data;
       console.log(this.catogeries);
-    },
-    error => {
-      alert("Không lấy thành công thông tin danh mục!");
     }
     )
   }

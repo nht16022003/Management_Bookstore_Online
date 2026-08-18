@@ -49,6 +49,17 @@ namespace ManagementBTOnline_API.Controllers
                     category_Name = c.categoryName
                 }
                 ).ToArrayAsync();
+
+            var data = await _context.Books.Include(b => b.Category).Select(b => new BookDTO
+            {
+                bookName = b.bookName,
+                price = b.price,
+                description = b.description,
+                imageURL = b.imageURL,
+                quantity = b.quantity,
+                id_Category = b.Category.id_Category,
+                category_Name = b.Category.categoryName,
+            }).ToArrayAsync();
                 
                 /*
                  var result = await (
@@ -70,7 +81,7 @@ namespace ManagementBTOnline_API.Controllers
                           }
               ).ToListAsync();*/
 
-            return Ok(result);
+            return Ok(data);
         }
     
     }

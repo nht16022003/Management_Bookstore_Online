@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ManagementBTOnline_API.Models.CategoryManagement;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ManagementBTOnline_API.Models.BookManagement
@@ -21,5 +22,7 @@ namespace ManagementBTOnline_API.Models.BookManagement
         public string? imageURL { get; set; }
         [Column("QUANTITY")]
         public int? quantity { get; set; }
+
+        public CategoryModel Category { get; set; }
     }
 }

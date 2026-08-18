@@ -44,7 +44,15 @@ export class LoginPageComponent {
      
     error => {
       //Login thất bại
-      this.router.navigate(['/error']);
+      if(error.status == 401)
+      {
+        this.router.navigate(['/wrongaccount']);
+      }
+      if(error.status == 500 || error.status == 0)
+      {
+        this.router.navigate(['/server-error'])
+      }
+      
     } 
      
      
