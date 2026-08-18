@@ -12,9 +12,17 @@ export class BookService{
 
     
     
-    getBooks(){
-        return this.http.get<BookModel[]>
-        ("https://localhost:44314/api/Book");
+    getBooks(page:number, size:number, keyword:string){
+        return this.http.get<{
+            books:BookModel[],
+            totalItems:number,
+            page:number,
+            size:number
+            //khai báo trùng name với return Ok(..) bên controller để tránh
+            //lỗi undefined
+
+        }>
+        (`https://localhost:44314/api/Book/Cau1?page=${page}&size=${size}&keyword=${keyword}`);
     }
 
     

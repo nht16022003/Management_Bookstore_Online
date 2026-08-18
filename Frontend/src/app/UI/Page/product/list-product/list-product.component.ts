@@ -13,6 +13,17 @@ export class ListProductComponent implements OnInit {
 
 
   books:BookModel[]=[];
+
+
+   /**Phân trang */
+   currentPage:number = 1;
+
+   pageSize: number = 8;
+
+   keyword:string ='';
+
+   totalItems: number = 0;
+
  
   constructor(
     private bookService: BookService
@@ -23,14 +34,15 @@ export class ListProductComponent implements OnInit {
   }
   
   ngOnInit(): void {
-      this.bookService.getBooks().subscribe(data => {
-        console.log(data);
-        this.books = data;
+      this.bookService.getBooks(this.currentPage, this.pageSize, this.keyword).subscribe(
+      data => {
+        this.books = data.books;
+        console.log(this.books);
       },
       error => {
-        "Không thể load sản phẩm"
+        alert("Không load được sách");
       }
-    )
+     )
   }
  
 

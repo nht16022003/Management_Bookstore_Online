@@ -83,6 +83,52 @@ namespace ManagementBTOnline_API.Controllers
 
             return Ok(data);
         }
-    
+
+        [HttpGet("Cau1")]
+
+        public async Task<IActionResult> getBooks(int page = 1, int size = 8, string? keyword = null)
+        {
+            //page - đang xem trang nào
+            //size - mỗi trang bao nhiêu sách
+            //keyword - từ khóa tìm kiếm
+            //GET /api/Book?page=2&size=10&keyword=Harry
+
+            IQueryable<BookModel> query = _context.Books;
+
+            //Thêm Filtering
+            if (!string.IsNullOrEmpty(keyword)){
+                query = query.Where(b => b.bookName.Contains(keyword));
+            }
+
+            //Đếm tổng số dữ liệu (số sách)
+            var totalItems = await query.CountAsync(); //lấy số lượng sách đã lọc hoặc chưa lọc
+
+            //Thêm Pagination
+            var books = await query.
+                Skip((page - 1) * size).//nếu page 2 thì skip(8) tức lấy từ cuốn thứ 9 
+                Take(size).
+                Select(b => new BookDTO
+                {
+                    bookName = b.bookName,
+                    price = b.price,
+                    description = b.description,
+                    imageURL = b.imageURL,
+                    quantity = b.quantity,
+                    id_Category = b.Category.id_Category,
+                    category_Name = b.Category.categoryName,
+                }).
+                ToListAsync();
+            //Skip((1-1)*8) = skip(0) không bỏ cuốn nào lấy từ cuốn đầu
+            //Take(8) lấy 8  
+            return Ok(new
+            {
+                books,
+                totalItems,
+                page,
+                size
+
+            });
+        }
+
     }
 }

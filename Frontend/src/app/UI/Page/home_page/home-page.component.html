@@ -1,112 +1,171 @@
-
 <div class="container">
+
     <br>
+
     <div class="text-center">
-    <iframe
-        width="600"
-        height="315"
-        src="https://www.youtube.com/embed/SBbiI1aY4vs?start=1&autoplay=1"
-        title="YouTube video player"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen>
-    </iframe>
-</div>
-<br>
-
-<div class="">
-    <div  class="row g-4">
-        <div *ngFor="let item of pagedBooks" class="col-3">
-            <div class="card">
-                <img [src]="item.imageURL" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">{{item.bookName}}</h5>
-                    <p class="card-text">{{item.description}}</p>
-                    <h6 style="font-weight: bold;">Giá: <span>{{item.price}}</span></h6>
-                  
-                </div>
-                <div *ngIf="!checkRole()" class="card-footer">
-                     <div class="row">
-                        <div class="col-6">
-                            <a href="#" class="btn btn-primary">Mua Ngay</a>
-                        </div>
-                        <!--
-                        <a routerLink="/products" class="btn btn-primary">
-                            Go somewhere
-                        </a>
-                        -->
-                        <div class="col-6">
-                            <a href="#" class="btn btn-danger">Xem chi tiết</a>
-                        </div>
-                   </div>
-                  </div>
-           
-                 <div *ngIf="checkRole()" class="card-footer">
-                     <div class="row">
-                        <div class="col-6">
-                            <a href="#" class="btn btn-primary">Edit</a>
-                        </div>
-                        <!--
-                        <a routerLink="/products" class="btn btn-primary">
-                            Go somewhere
-                        </a>
-                        -->
-                        
-                   </div>
-                  </div>
-                </div>
-            </div>
+        <iframe
+            width="600"
+            height="315"
+            src="https://www.youtube.com/embed/SBbiI1aY4vs?start=1&autoplay=1"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+        </iframe>
     </div>
-</div>
-<nav class="mt-4">
 
-    <ul class="pagination justify-content-center">
-
-        <!-- Previous -->
-        <li
-            class="page-item"
-            [class.disabled]="currentPage === 1">
-
-            <button
-                class="page-link"
-                (click)="changePage(currentPage - 1)">
-                Previous
-            </button>
-
-        </li>
+    <br>
 
 
-        <!-- Pages -->
-        <li
-            *ngFor="let page of [].constructor(totalPage); let i = index"
-            class="page-item"
-            [class.active]="currentPage === i + 1">
+    <!-- DANH SÁCH SÁCH -->
+    <div class="">
+        <div class="row g-4">
 
-            <button
-                class="page-link"
-                (click)="changePage(i + 1)">
+            <!-- Đổi pagedBooks thành books -->
+            <div
+                *ngFor="let item of books"
+                class="col-3">
 
-                {{ i + 1 }}
+                <div class="card">
 
-            </button>
+                    <img
+                        [src]="item.imageURL"
+                        class="card-img-top"
+                        alt="..."
+                    >
 
-        </li>
+                    <div class="card-body">
+
+                        <h5 class="card-title">
+                            {{item.bookName}}
+                        </h5>
+
+                        <p class="card-text">
+                            {{item.description}}
+                        </p>
+
+                        <h6 style="font-weight: bold;">
+                            Giá:
+                            <span>{{item.price}}</span>
+                        </h6>
+
+                    </div>
 
 
-        <!-- Next -->
-        <li
-            class="page-item"
-            [class.disabled]="currentPage === totalPage">
+                    <!-- USER -->
+                    <div
+                        *ngIf="!checkRole()"
+                        class="card-footer">
 
-            <button
-                class="page-link"
-                (click)="changePage(currentPage + 1)">
-                Next
-            </button>
+                        <div class="row">
 
-        </li>
+                            <div class="col-6">
+                                <a
+                                    href="#"
+                                    class="btn btn-primary">
+                                    Mua Ngay
+                                </a>
+                            </div>
 
-    </ul>
+                            <div class="col-6">
+                                <a
+                                    href="#"
+                                    class="btn btn-danger">
+                                    Xem chi tiết
+                                </a>
+                            </div>
 
-</nav>
+                        </div>
+
+                    </div>
+
+
+                    <!-- ADMIN -->
+                    <div
+                        *ngIf="checkRole()"
+                        class="card-footer">
+
+                        <div class="row">
+
+                            <div class="col-6">
+                                <a
+                                    href="#"
+                                    class="btn btn-primary">
+                                    Edit
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- PHÂN TRANG -->
+    <nav class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+
+            <!-- Previous -->
+            <li
+                class="page-item"
+                [class.disabled]="page === 1">
+
+                <button
+                    class="page-link"
+                    (click)="changePage(page - 1)">
+
+                    Previous
+
+                </button>
+
+            </li>
+
+
+            <!-- Các trang -->
+            <li
+                *ngFor="
+                    let p of [].constructor(totalPage);
+                    let i = index
+                "
+                class="page-item"
+                [class.active]="page === i + 1">
+
+                <button
+                    class="page-link"
+                    (click)="changePage(i + 1)">
+
+                    {{ i + 1 }}
+
+                </button>
+
+            </li>
+
+
+            <!-- Next -->
+            <li
+                class="page-item"
+                [class.disabled]="page === totalPage">
+
+                <button
+                    class="page-link"
+                    (click)="changePage(page + 1)">
+
+                    Next
+
+                </button>
+
+            </li>
+
+        </ul>
+
+    </nav>
+
 </div>

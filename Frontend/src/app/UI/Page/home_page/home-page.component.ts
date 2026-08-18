@@ -19,8 +19,13 @@ export class HomePageComponent implements OnInit{
    books: BookModel[] = [];
 
    /**Phân trang */
-   currentPage:number = 1;
-   pageSize: number = 8;
+   page:number = 1; //trang hiện tại
+
+   size: number = 8;
+
+   keyword:string ='';
+
+   totalItems: number = 0;
 
    constructor( private bookService: BookService,
     private authservice: AuthService
@@ -29,9 +34,11 @@ export class HomePageComponent implements OnInit{
    ngOnInit(): void {
      
       
-       this.bookService.getBooks().subscribe(
+       this.bookService.getBooks(this.page, this.size, this.keyword).subscribe(
       data => {
-        this.books = data;
+        this.books = data.books;
+        this.totalItems = data.totalItems;
+        
         console.log(this.books);
       },
       error => {
@@ -54,8 +61,10 @@ export class HomePageComponent implements OnInit{
    }
 
    /**Phân trang */
+
+   //Tổng trang
    get totalPage():number{
-    return Math.ceil(this.books.length/this.pageSize);
+    return Math.ceil(this.totalItems/this.size);
     /**
      * 
      * this.book.length: số lượng sách
@@ -65,14 +74,6 @@ export class HomePageComponent implements OnInit{
      */
    }
 
-   /**Lấy sách của trang hiện tại */
-   get pagedBooks():BookModel[]{
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-      const endIndex = startIndex + this.pageSize;
-
-      return this.books.slice(startIndex,endIndex);
-   }
-
    /**Chuyển trang */
    changePage(page: number): void {
 
@@ -80,6 +81,7 @@ export class HomePageComponent implements OnInit{
         return;
     }
 
-    this.currentPage = page;
+    this.page = page;
+    this.ngOnInit();
 }
 }
