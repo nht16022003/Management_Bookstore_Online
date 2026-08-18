@@ -12,6 +12,8 @@ import { Header } from './UI/Page/header/header.component';
 import { ListGroupComponent } from './UI/Page/list_group/list_group.component';
 import { MainLayoutComponent } from './UI/Page/main-layout/main-layout.component';
 import { WrongAccountLoginComponent } from './UI/Page/errors_page/wrong_accountlogin_page/wrong_accountlogin_page.component';
+import { RegisterComponent } from './UI/Page/register_page/register-page.component';
+import { RegisterSucessComponent } from './UI/Page/register_page/register-success_page/register-success.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +23,9 @@ import { WrongAccountLoginComponent } from './UI/Page/errors_page/wrong_accountl
     ListGroupComponent,
     MainLayoutComponent,
     ListGroupComponent,
-    WrongAccountLoginComponent
+    WrongAccountLoginComponent,
+    RegisterComponent,
+    RegisterSucessComponent
     
   ],
   imports: [

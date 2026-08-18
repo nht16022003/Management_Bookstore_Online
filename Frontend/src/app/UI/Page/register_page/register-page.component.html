@@ -1,0 +1,190 @@
+<div class="register-page">
+
+    <div class="register-container">
+
+        <!-- Tiêu đề -->
+        <div class="text-center mb-4">
+            <h2 class="brand">BookStore</h2>
+            <p class="subtitle">
+                Tạo tài khoản mới
+            </p>
+        </div>
+
+
+        <div class="register-card">
+
+            <form>
+
+                <!-- ==================== -->
+                <!-- THÔNG TIN CÁ NHÂN -->
+                <!-- ==================== -->
+
+                <div class="section-title">
+                    Thông tin cá nhân
+                </div>
+
+                <!-- Họ tên -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Họ và tên
+                    </label>
+
+                    <input
+                        type="text"
+                        name="username"
+                        [(ngModel)]="register.user_Name"
+                        class="form-control"
+                        placeholder="Nhập họ và tên">
+                </div>
+
+
+                <!-- Tuổi -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Tuổi
+                    </label>
+
+                    <input
+                        type="number"
+                        name="age"
+                        [(ngModel)]="register.user_Age"
+                        class="form-control"
+                        placeholder="Nhập tuổi">
+                </div>
+
+
+                <!-- Địa chỉ -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Địa chỉ
+                    </label>
+
+                    <input
+                        type="text"
+                        name="address"
+                        [(ngModel)]="register.user_Address"
+                        class="form-control"
+                        placeholder="Nhập địa chỉ">
+                </div>
+
+
+                <!-- Số điện thoại -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Số điện thoại
+                    </label>
+
+                    <input
+                        type="tel"
+                        name="phone"
+                        [(ngModel)]="register.user_Phone"
+                        class="form-control"
+                        placeholder="Nhập số điện thoại">
+                </div>
+
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label class="form-label">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        [(ngModel)]="register.user_Email"
+                        class="form-control"
+                        placeholder="example@gmail.com">
+                </div>
+
+
+                <!-- ==================== -->
+                <!-- THÔNG TIN TÀI KHOẢN -->
+                <!-- ==================== -->
+
+                <div class="section-title">
+                    Thông tin tài khoản
+                </div>
+
+
+                <!-- Username -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Tên tài khoản
+                    </label>
+
+                    <input
+                        type="text"
+                        name="account"
+                        [(ngModel)]="register.userName"
+                        class="form-control"
+                        placeholder="Nhập tên tài khoản">
+                </div>
+
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Mật khẩu
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        [(ngModel)]="register.hashPassword"
+                        class="form-control"
+                        placeholder="Nhập mật khẩu">
+                </div>
+
+
+                <!--
+                
+                 Confirm Password 
+                <div class="mb-4">
+                    <label class="form-label">
+                        Xác nhận mật khẩu
+                    </label>
+
+                    <input
+                        type="password"
+                        class="form-control"
+                        placeholder="Nhập lại mật khẩu">
+                </div>
+
+                -->
+
+
+                <!-- Đăng ký -->
+                <button
+                    type="submit"
+                    class="btn btn-register w-100"
+                    (click)="regis()"
+                    >
+                    
+                    
+
+                    Đăng ký
+
+                </button>
+
+            </form>
+
+
+            <!-- Đã có tài khoản -->
+            <div class="login-link text-center">
+
+                <span>
+                    Đã có tài khoản?
+                </span>
+
+                <a routerLink="/login">
+                    Đăng nhập
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

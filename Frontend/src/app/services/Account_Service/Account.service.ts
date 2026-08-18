@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AccountModel } from '../../models/AccountModel';
+import { RegisterModel } from 'src/app/models/RegisterModel';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,6 +11,9 @@ export class AccountService{
     getAccount(newAc: AccountModel){
         return this.http.post<AccountModel>
         ("https://localhost:44314/api/Account/login", newAc);
+    }
+    regisAccount(account: RegisterModel){
+        return this.http.post<RegisterModel>("https://localhost:44314/api/Account/register", account);
     }
     /**
      * upDateStudent(student: student)

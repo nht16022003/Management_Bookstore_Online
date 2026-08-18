@@ -7,6 +7,8 @@ import { MainLayoutComponent } from './UI/Page/main-layout/main-layout.component
 import { ListProductComponent } from './UI/Page/product/list-product/list-product.component';
 import { ServerErrorComponent } from './UI/Page/errors_page/server-error-page.component';
 import { WrongAccountLoginComponent } from './UI/Page/errors_page/wrong_accountlogin_page/wrong_accountlogin_page.component';
+import { RegisterComponent } from './UI/Page/register_page/register-page.component';
+import { RegisterSucessComponent } from './UI/Page/register_page/register-success_page/register-success.component';
 
 const routes: Routes = [
 
@@ -30,7 +32,16 @@ const routes: Routes = [
       {
         path:'wrongaccount',
         component: WrongAccountLoginComponent
+      },
+      {
+        path:'register',
+        component:RegisterComponent
+      },
+      {
+        path:'register-sucess',
+        component:RegisterSucessComponent
       }
+    
     ]
   },
 
