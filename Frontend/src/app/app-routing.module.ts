@@ -9,6 +9,10 @@ import { ServerErrorComponent } from './UI/Page/errors_page/server-error-page.co
 import { WrongAccountLoginComponent } from './UI/Page/errors_page/wrong_accountlogin_page/wrong_accountlogin_page.component';
 import { RegisterComponent } from './UI/Page/register_page/register-page.component';
 import { RegisterSucessComponent } from './UI/Page/register_page/register-success_page/register-success.component';
+import { AuthGuard } from './guards/auth.guard';
+import { AddProductComponent } from './UI/Page/product/add-product/add-product-page.component';
+import { EditProductComponent } from './UI/Page/product/edit-product/edit-product-page.component';
+import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component';
 
 const routes: Routes = [
 
@@ -23,7 +27,8 @@ const routes: Routes = [
       },
       {
         path: 'listproduct',
-        component: ListProductComponent
+        component: ListProductComponent,
+        canActivate: [AuthGuard]
       },
       {
         path:'server-error',
@@ -40,6 +45,18 @@ const routes: Routes = [
       {
         path:'register-sucess',
         component:RegisterSucessComponent
+      },
+      {
+        path:'addBook',
+        component:AddProductComponent
+      },
+      {
+        path:'editBook/:id',
+        component:EditProductComponent
+      },
+      {
+        path:'audit-log',
+        component:AuditLogComponent
       }
     
     ]

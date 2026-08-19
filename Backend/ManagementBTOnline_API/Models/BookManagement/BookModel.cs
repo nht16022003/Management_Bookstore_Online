@@ -8,6 +8,7 @@ namespace ManagementBTOnline_API.Models.BookManagement
     public class BookModel
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID_BOOK")]
         public int? id_Book { get; set; }
         [Column("BOOK_NAME")]

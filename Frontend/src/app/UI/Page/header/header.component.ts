@@ -17,7 +17,9 @@ export class Header {
 
     constructor(private authservice:AuthService,
         private accountService:AccountService,
-        private router: Router)
+        private router: Router,
+        public authservi: AuthService)
+       
     {
         
     }

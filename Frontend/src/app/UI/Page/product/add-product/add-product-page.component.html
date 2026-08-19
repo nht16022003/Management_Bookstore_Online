@@ -1,0 +1,137 @@
+<div class="book-form-container">
+
+  <div class="form-header">
+    <h2>Thêm sách</h2>
+    <p>Nhập thông tin sách mới</p>
+  </div>
+
+  <form #bookForm="ngForm" (ngSubmit)="addBook(bookForm)">
+
+    <!-- Tên sách -->
+    <div class="form-group">
+      <label for="bookName">Tên sách</label>
+
+      <input
+        type="text"
+        id="bookName"
+        name="bookName"
+        [(ngModel)]="book.bookName"
+        required
+        placeholder="Nhập tên sách"
+      >
+    </div>
+
+    <!-- Giá -->
+    <div class="form-group">
+      <label for="price">Giá</label>
+
+      <input
+        type="number"
+        id="price"
+        name="price"
+        [(ngModel)]="book.price"
+        min="0"
+        required
+        placeholder="Nhập giá sách"
+      >
+    </div>
+
+    <!-- Số lượng -->
+    <div class="form-group">
+      <label for="quantity">Số lượng</label>
+
+      <input
+        type="number"
+        id="quantity"
+        name="quantity"
+        [(ngModel)]="book.quantity"
+        min="0"
+        required
+        placeholder="Nhập số lượng"
+      >
+    </div>
+
+    <!-- Danh mục -->
+    <div class="form-group">
+      <label for="category">Danh mục</label>
+
+      <select
+        id="category"
+        name="id_Category"
+        [(ngModel)]="book.id_Category"
+        required
+      >
+        <option value="">-- Chọn danh mục --</option>
+
+        <option
+          *ngFor="let category of categories"
+          [value]="category.id_Category"
+        >
+          {{ category.categoryName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Hình ảnh -->
+    <div class="form-group">
+      <label for="imageURL">URL hình ảnh</label>
+
+      <input
+        type="text"
+        id="imageURL"
+        name="imageURL"
+        [(ngModel)]="book.imageURL"
+        placeholder="Nhập URL hình ảnh"
+      >
+    </div>
+
+    <!-- Mô tả -->
+    <div class="form-group">
+      <label for="description">Mô tả</label>
+
+      <textarea
+        id="description"
+        name="description"
+        [(ngModel)]="book.description"
+        rows="5"
+        placeholder="Nhập mô tả sách"
+      ></textarea>
+    </div>
+
+    <!-- Preview ảnh -->
+    <div
+      class="image-preview"
+      *ngIf="book.imageURL"
+    >
+      <p>Xem trước hình ảnh</p>
+
+      <img
+        [src]="book.imageURL"
+        alt="Book image"
+      >
+    </div>
+
+    <!-- Button -->
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="btn-cancel"
+        (click)="cancel()"
+      >
+        Hủy
+      </button>
+
+      <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="bookForm.invalid"
+      >
+        Thêm sách
+      </button>
+
+    </div>
+
+  </form>
+
+</div>

@@ -1,27 +1,264 @@
-<div class="table-responsive">
-  <table class="table align-middle">
-    <thead>
-      <tr>
-        
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        
-      </tr>
-      <tr class="align-bottom">
-        
-      </tr>
-      <tr>
-        <td class="edit">MÃ SÁCH</td>
-        <td class="edit">TÊN SÁCH</td>
-        <td class="edit">ẢNH</td>
-        <td class="edit">GIÁ BÁN</td>
-        <td class="edit">MÃ DANH MỤC</td>
-        <td class="edit">TÊN DANH MỤC</td>
-        <td class="edit">SỐ LƯỢNG</td>
-        <td class="edit"> </td>
-      </tr>
-    </tbody>
-  </table>
+<div class="admin-book-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        <div>
+            <h2>Quản lý sách</h2>
+            <p>Quản lý danh sách sách trong cửa hàng</p>
+        </div>
+
+        <button class="btn-add" (click)="addBook()">
+            <span>+</span>
+            Thêm sách
+        </button>
+
+    </div>
+
+
+    <!-- SEARCH -->
+    <div class="toolbar">
+
+        <div class="search-box">
+
+            <span class="search-icon">⌕</span>
+
+            <input
+                type="text"
+                [(ngModel)]="keyword"
+                placeholder="Tìm kiếm tên sách..."
+            >
+
+            <button
+                class="btn-search"
+                (click)="searchBook()">
+
+                Tìm kiếm
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="table-container">
+
+        <table class="book-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>MÃ SÁCH</th>
+
+                    <th>THÔNG TIN SÁCH</th>
+
+                    <th>ẢNH</th>
+
+                    <th>GIÁ BÁN</th>
+
+                    <th>MÃ DANH MỤC</th>
+
+                    <th>TÊN DANH MỤC</th>
+
+                    <th>SỐ LƯỢNG</th>
+
+                    <th>THAO TÁC</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr *ngFor="let item of books">
+
+                    <!-- MÃ SÁCH -->
+                    <td class="book-id">
+                        {{ item.id_Book }}
+                    </td>
+
+
+                    <!-- TÊN + MÔ TẢ -->
+                    <td>
+
+                        <div class="book-info">
+
+                            <strong>
+                                {{ item.bookName }}
+                            </strong>
+
+                            <span>
+                                {{ item.description }}
+                            </span>
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- ẢNH -->
+                    <td>
+
+                        <img
+                            [src]="item.imageURL"
+                            class="book-image"
+                            alt="Book"
+                        >
+
+                    </td>
+
+
+                    <!-- GIÁ -->
+                    <td class="price">
+
+                        {{ item.price | number:'1.0-0' }} ₫
+
+                    </td>
+
+
+                    <!-- MÃ DANH MỤC -->
+                    <td>
+
+                        <span class="category-code">
+                            {{ item.id_Category }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- TÊN DANH MỤC -->
+                    <td>
+
+                        {{ item.category_Name }}
+
+                    </td>
+
+
+                    <!-- SỐ LƯỢNG -->
+                    <td>
+
+                        <span
+                            class="quantity"
+                            [class.out-of-stock]="item.quantity === 0">
+
+                            {{ item.quantity }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- ACTION -->
+                    <td>
+
+                        <div class="action-buttons">
+
+                            <button
+                                class="btn-edit"
+                                (click)="editBook(item)">
+
+                                Sửa
+
+                            </button>
+
+                            <button
+                                class="btn-delete"
+                                (click)="deleteBook(item)">
+
+                                Xóa
+
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- KHÔNG CÓ DỮ LIỆU -->
+                <tr *ngIf="books.length === 0">
+
+                    <td
+                        colspan="8"
+                        class="empty-data">
+
+                        Không có sách nào.
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- PHÂN TRANG -->
+    <nav class="mt-4">
+
+        <ul class="pagination justify-content-center">
+
+
+            <!-- Previous -->
+            <li
+                class="page-item"
+                [class.disabled]="page === 1">
+
+                <button
+                    class="page-link"
+                    (click)="changePage(page - 1)">
+
+                    Previous
+
+                </button>
+
+            </li>
+
+
+            <!-- Các trang -->
+            <li
+                *ngFor="
+                    let p of [].constructor(totalPage);
+                    let i = index
+                "
+                class="page-item"
+                [class.active]="page === i + 1">
+
+                <button
+                    class="page-link"
+                    (click)="changePage(i + 1)">
+
+                    {{ i + 1 }}
+
+                </button>
+
+            </li>
+
+
+            <!-- Next -->
+            <li
+                class="page-item"
+                [class.disabled]="page === totalPage">
+
+                <button
+                    class="page-link"
+                    (click)="changePage(page + 1)">
+
+                    Next
+
+                </button>
+
+            </li>
+
+        </ul>
+
+    </nav>
+
 </div>

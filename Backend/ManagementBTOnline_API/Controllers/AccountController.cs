@@ -7,6 +7,11 @@ using System.Xml;
 using Microsoft.AspNetCore.Identity;
 using ManagementBTOnline_API.Models.RegisterManagement;
 using ManagementBTOnline_API.Models.UsersManagement; // dùng để hashPassword
+//JWT
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace ManagementBTOnline_API.Controllers
@@ -18,12 +23,56 @@ namespace ManagementBTOnline_API.Controllers
         private readonly ApplicationDBContext _context;
         private readonly PasswordHasher<AccountModel> _passwordHasher
             = new PasswordHasher<AccountModel>();
+        private readonly IConfiguration _configuration;
 
-        public AccountController(ApplicationDBContext context)
+        public AccountController(ApplicationDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
+        //GenerateJwtToken()
+        private string GenerateJwtToken(AccountDTO account)
+        {
+            var claims = new[]
+            {
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    account.userId.ToString()
+                ),
+
+                new Claim(
+                    ClaimTypes.Name,
+                    account.userName
+                ),
+
+                new Claim(
+                    ClaimTypes.Role,
+                    account.roleName
+                )
+            };
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(
+                    _configuration["Jwt:Key"]!
+                )
+            );
+
+            var credentials = new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256
+            );
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(2),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> getAccount(AccountDTO dto)
@@ -92,7 +141,7 @@ namespace ManagementBTOnline_API.Controllers
             //{
             //    return Unauthorized("Sai username hoặc password");
             //}
-            
+
             /*
                  var result = await (
                   from a in _context.TableA
@@ -112,7 +161,9 @@ namespace ManagementBTOnline_API.Controllers
                               Property3 = c.Column3
                           }
               ).ToListAsync();*/
-            return Ok(result);
+
+            var token = GenerateJwtToken(result);
+            return Ok( new { result, token });
         }
 
         [HttpPost("register")]

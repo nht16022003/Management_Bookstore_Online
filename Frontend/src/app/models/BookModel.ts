@@ -1,4 +1,5 @@
 export interface BookModel{
+    id_Book:number,
     bookName:string,
     price:number,
     description:string,

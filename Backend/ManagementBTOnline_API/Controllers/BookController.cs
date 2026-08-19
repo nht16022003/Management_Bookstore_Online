@@ -2,11 +2,13 @@
 using ManagementBTOnline_API.Models.BookManagement;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ManagementBTOnline_API.Filters;
 
 namespace ManagementBTOnline_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ServiceFilter(typeof(AuditLogFilter))]
     public class BookController : Controller
     {
         private readonly ApplicationDBContext _context;
@@ -109,6 +111,7 @@ namespace ManagementBTOnline_API.Controllers
                 Take(size).
                 Select(b => new BookDTO
                 {
+                    id_Book = b.id_Book,
                     bookName = b.bookName,
                     price = b.price,
                     description = b.description,
@@ -128,6 +131,95 @@ namespace ManagementBTOnline_API.Controllers
                 size
 
             });
+        }
+
+        [HttpPost("addBooks")]
+
+        public async Task<IActionResult> addBooks(BookDTO dto)
+        {
+            var book = new BookModel
+            {
+            
+
+                bookName = dto.bookName,
+
+                price = dto.price,
+
+                description = dto.description,
+
+                imageURL = dto.imageURL,
+
+                quantity = dto.quantity,
+
+                id_Category = dto.id_Category,
+
+
+                
+            };
+
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+
+            return Ok(book);
+        }
+
+        [HttpPut("editBook")]
+
+        public async Task<IActionResult> editBook(BookDTO dto, int id)
+        {
+            //Query để lấy thông tin id book
+            IQueryable<BookModel> query = _context.Books;
+            query = query.Where(b => b.id_Book == id);
+
+            var book = await query.FirstOrDefaultAsync();
+
+            // Không tìm thấy sách
+            if (book == null)
+            {
+                return NotFound("Không tìm thấy sách");
+            }
+
+            // Gán dữ liệu mới
+         
+            book.bookName = dto.bookName;
+            book.price = dto.price;
+            book.description = dto.description;
+            book.imageURL = dto.imageURL;
+            book.quantity = dto.quantity;
+            book.id_Category = dto.id_Category;
+
+            // Lưu thay đổi
+            await _context.SaveChangesAsync();
+
+            return Ok(book);
+
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookById(int id)
+        {
+            var book = await _context.Books
+                .Include(b => b.Category)
+                .Where(b => b.id_Book == id)
+                .Select(b => new BookDTO
+                {
+                    id_Book = b.id_Book,
+                    bookName = b.bookName,
+                    price = b.price,
+                    description = b.description,
+                    imageURL = b.imageURL,
+                    quantity = b.quantity,
+                    id_Category = b.id_Category,
+                    category_Name = b.Category.categoryName
+                })
+                .FirstOrDefaultAsync();
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
         }
 
     }

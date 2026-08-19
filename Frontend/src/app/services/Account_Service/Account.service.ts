@@ -8,9 +8,16 @@ import { RegisterModel } from 'src/app/models/RegisterModel';
 
 export class AccountService{
     constructor(private http: HttpClient) { }
-    getAccount(newAc: AccountModel){
-        return this.http.post<AccountModel>
-        ("https://localhost:44314/api/Account/login", newAc);
+    getAccount(result: AccountModel) {
+
+        return this.http.post<{
+            account: AccountModel;
+            token: string;
+        }>(
+            "https://localhost:44314/api/Account/login",
+            result
+        );
+
     }
     regisAccount(account: RegisterModel){
         return this.http.post<RegisterModel>("https://localhost:44314/api/Account/register", account);

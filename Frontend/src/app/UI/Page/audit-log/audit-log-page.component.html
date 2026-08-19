@@ -1,0 +1,282 @@
+<div class="audit-page">
+
+    <!-- HEADER -->
+    <div class="audit-header">
+
+        <div>
+            <div class="breadcrumb">
+                Quản lý
+                <span>›</span>
+                Lịch sử hoạt động
+            </div>
+
+            <h2>Lịch sử hoạt động</h2>
+
+            <p>
+                Theo dõi các thao tác được thực hiện trong hệ thống
+            </p>
+        </div>
+
+        <div class="header-badge">
+            <span class="history-icon">↻</span>
+            <span>Audit Log</span>
+        </div>
+
+    </div>
+
+
+    <!-- STAT -->
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            ☷
+        </div>
+
+        <div class="stat-content">
+
+            <span>
+                Tổng số hoạt động
+            </span>
+
+            <strong>
+                {{ logs.length }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="audit-card">
+
+        <div class="card-header">
+
+            <div>
+                <h3>Hoạt động gần đây</h3>
+
+                <p>
+                    Danh sách các thao tác thêm, sửa và xóa dữ liệu
+                </p>
+            </div>
+
+            <span class="log-count">
+                {{ logs.length }} hoạt động
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="audit-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th width="60">
+                            #
+                        </th>
+
+                        <th>
+                            NGƯỜI THỰC HIỆN
+                        </th>
+
+                        <th>
+                            THAO TÁC
+                        </th>
+
+                        <th>
+                            ĐỐI TƯỢNG
+                        </th>
+
+                        <th>
+                            CHỨC NĂNG
+                        </th>
+
+                        <th>
+                            MÔ TẢ
+                        </th>
+
+                        <th>
+                            THỜI GIAN
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr
+                        *ngFor="let item of logs; let i = index"
+                    >
+
+                        <!-- STT -->
+
+                        <td class="number">
+                            {{ i + 1 }}
+                        </td>
+
+
+                        <!-- USER -->
+
+                        <td>
+
+                            <div class="user-cell">
+
+                                <div class="avatar">
+
+                                    {{ item.userName?.charAt(0)?.toUpperCase() }}
+
+                                </div>
+
+                                <div class="user-detail">
+
+                                    <strong>
+                                        {{ item.userName }}
+                                    </strong>
+
+                                    <small>
+                                        User ID: {{ item.userId }}
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <span
+                                class="action-badge"
+                                [ngClass]="{
+                                    'create': item.action === 'CREATE',
+                                    'update': item.action === 'UPDATE',
+                                    'delete': item.action === 'DELETE'
+                                }"
+                            >
+
+                                <ng-container
+                                    [ngSwitch]="item.action"
+                                >
+
+                                    <span *ngSwitchCase="'CREATE'">
+                                        + &nbsp;Thêm
+                                    </span>
+
+                                    <span *ngSwitchCase="'UPDATE'">
+                                        ✎ &nbsp;Sửa
+                                    </span>
+
+                                    <span *ngSwitchCase="'DELETE'">
+                                        × &nbsp;Xóa
+                                    </span>
+
+                                    <span *ngSwitchDefault>
+                                        {{ item.action }}
+                                    </span>
+
+                                </ng-container>
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- CONTROLLER -->
+
+                        <td>
+
+                            <span class="object-badge">
+                                {{ item.controllerName }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- ACTION NAME -->
+
+                        <td>
+
+                            <span class="function-name">
+                                {{ item.actionName }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- DESCRIPTION -->
+
+                        <td>
+
+                            <span class="description">
+                                {{ item.description }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- TIME -->
+
+                        <td>
+
+                            <div class="date-time">
+
+                                <strong>
+                                    {{ item.createdAt | date:'dd/MM/yyyy' }}
+                                </strong>
+
+                                <span>
+                                    {{ item.createdAt | date:'HH:mm:ss' }}
+                                </span>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    <!-- EMPTY -->
+
+                    <tr *ngIf="logs.length === 0">
+
+                        <td
+                            colspan="7"
+                            class="empty"
+                        >
+
+                            <div class="empty-icon">
+                                ◷
+                            </div>
+
+                            <strong>
+                                Chưa có hoạt động
+                            </strong>
+
+                            <p>
+                                Lịch sử thêm, sửa, xóa sẽ được hiển thị tại đây.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

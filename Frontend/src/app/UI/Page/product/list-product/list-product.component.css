@@ -1,3 +1,330 @@
-.edit{
-    font-weight: bold;
+.admin-book-page {
+    padding: 30px;
+    background: #f6f7fb;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #222;
+}
+
+.page-header p {
+    margin: 6px 0 0;
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* =========================
+   ADD BUTTON
+========================= */
+
+.btn-add {
+    border: none;
+    background: #222;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 7px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-add span {
+    font-size: 20px;
+    margin-right: 6px;
+}
+
+.btn-add:hover {
+    background: #444;
+}
+
+
+/* =========================
+   TOOLBAR
+========================= */
+
+.toolbar {
+    background: white;
+    padding: 18px;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid #eee;
+}
+
+.search-box {
+    display: flex;
+    width: 500px;
+    max-width: 100%;
+}
+
+.search-icon {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    color: #777;
+}
+
+.search-box input {
+    flex: 1;
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-box input:focus {
+    border-color: #999;
+}
+
+.btn-search {
+    border: none;
+    background: #333;
+    color: white;
+    padding: 0 18px;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+}
+
+.btn-search:hover {
+    background: #555;
+}
+
+
+/* =========================
+   TABLE
+========================= */
+
+.table-container {
+    background: white;
+    overflow-x: auto;
+}
+
+.book-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1100px;
+}
+
+.book-table thead {
+    background: #f8f8f8;
+}
+
+.book-table th {
+    padding: 15px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+}
+
+.book-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.book-table tbody tr {
+    transition: 0.15s;
+}
+
+.book-table tbody tr:hover {
+    background: #fafafa;
+}
+
+
+/* =========================
+   BOOK INFO
+========================= */
+
+.book-id {
+    font-weight: 600;
+    color: #555;
+}
+
+.book-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 260px;
+}
+
+.book-info strong {
+    color: #222;
+    font-size: 15px;
+}
+
+.book-info span {
+    color: #888;
+    font-size: 12px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.book-image {
+    width: 65px;
+    height: 85px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+
+/* =========================
+   PRICE
+========================= */
+
+.price {
+    font-weight: 600;
+    color: #222;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   CATEGORY
+========================= */
+
+.category-code {
+    display: inline-block;
+    padding: 5px 9px;
+    background: #f1f1f1;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   QUANTITY
+========================= */
+
+.quantity {
+    display: inline-block;
+    min-width: 35px;
+    padding: 5px 8px;
+    text-align: center;
+    background: #f1f1f1;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.quantity.out-of-stock {
+    background: #ffe5e5;
+    color: #d00000;
+}
+
+
+/* =========================
+   ACTION
+========================= */
+
+.action-buttons {
+    display: flex;
+    gap: 7px;
+}
+
+.action-buttons button {
+    border: none;
+    padding: 7px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background: #eeeeee;
+    color: #333;
+}
+
+.btn-edit:hover {
+    background: #ddd;
+}
+
+.btn-delete {
+    background: #ffe5e5;
+    color: #d00000;
+}
+
+.btn-delete:hover {
+    background: #ffd0d0;
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty-data {
+    text-align: center;
+    padding: 50px !important;
+    color: #888;
+}
+
+
+/* =========================
+   PAGINATION
+========================= */
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    background: white;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+}
+
+.page-button {
+    min-width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.page-button:hover:not(:disabled) {
+    background: #f1f1f1;
+}
+
+.page-button.active {
+    background: #222;
+    color: white;
+    border-color: #222;
+}
+
+.page-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }

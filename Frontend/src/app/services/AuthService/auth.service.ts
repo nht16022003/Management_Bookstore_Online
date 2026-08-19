@@ -9,15 +9,20 @@ export class AuthService{
     private loggedIn = false; 
     private account: AccountModel | null = null; //property của AuthService
 
-    login(account: AccountModel): void
+    login(response: any): void
     {
         //api trả response = account: AccountModel
-        this.account = account; //account khai báo sẽ là account được reponse dìa, lưu account vào AuthSerice 
+        this.account = response.result; //account khai báo sẽ là account được reponse dìa, lưu account vào AuthSerice 
 
         localStorage.setItem(
             'account',
-            JSON.stringify(account)
+            JSON.stringify(response.result)
         );
+            localStorage.setItem(
+            'token',
+            response.token
+        );
+        
     }
 
     logout():void

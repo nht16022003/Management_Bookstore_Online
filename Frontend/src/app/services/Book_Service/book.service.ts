@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BookModel } from 'src/app/models/BookModel';
-
+import { AddBookModel } from 'src/app/models/AddBookModel';
 
 @Injectable({
   providedIn: 'root'
@@ -25,10 +25,23 @@ export class BookService{
         (`https://localhost:44314/api/Book/Cau1?page=${page}&size=${size}&keyword=${keyword}`);
     }
 
-    
+     addBook(book:AddBookModel){
+        return this.http.post<AddBookModel>(
+            "https://localhost:44314/api/Book/addBooks", book
+        );
+
+   
     }
 
-    
+      getBookById(id: number){
+        return this.http.get<BookModel>( `https://localhost:44314/api/Book/${id}`);
+      }
+      
+      editBook(book:BookModel){
+        return this.http.put<BookModel>
+        (`https://localhost:44314/api/Book/editBook?id=${book.id_Book}`, book);
+      }
+    }
     
     /**
      * upDateStudent(student: student)

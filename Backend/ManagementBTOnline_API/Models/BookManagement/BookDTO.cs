@@ -2,8 +2,8 @@
 {
     public class BookDTO
     {
-       
 
+        public int? id_Book { get; set; }
         public string bookName { get; set; }
 
         public decimal? price { get; set; }
