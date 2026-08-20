@@ -54,24 +54,28 @@ namespace ManagementBTOnline_API.Controllers
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
-                    _configuration["Jwt:Key"]!
+                    _configuration["Jwt:Key"]! //lấy key trong appseting.json 
+                    //sau đó chuyển thành chuỗi byte[]
                 )
             );
 
             var credentials = new SigningCredentials(
                 key,
                 SecurityAlgorithms.HmacSha256
+                //dùng thuật toán HMAC-SHA256 để ký JWT
             );
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddHours(2),//JWT có 2 giờ kể từ thời điểm tạo
+                //Sau 2 giờ angular gửi jwt đến core validatetime token hết hạn ra 401 Unauthorized
                 signingCredentials: credentials
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+            //Biên token thành chuỗi
         }
 
         [HttpPost("login")]

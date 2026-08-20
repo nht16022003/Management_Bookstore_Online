@@ -7,6 +7,7 @@ import { BookModel } from 'src/app/models/BookModel';
 import { BookService } from 'src/app/services/Book_Service/book.service';
 import { LoginPageComponent } from '../login_page/login-page.component';
 import { AuthService } from 'src/app/services/AuthService/auth.service';
+import { NotificationService } from 'src/app/services/NotificationService/notification.service';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class HomePageComponent implements OnInit{
    totalItems: number = 0;
 
    constructor( private bookService: BookService,
-    private authservice: AuthService
+    private authservice: AuthService,
+    private notification: NotificationService
    ){}
 
    ngOnInit(): void {
@@ -50,7 +52,14 @@ export class HomePageComponent implements OnInit{
      
    }
    
+    testToast(): void {
 
+      this.notification.success(
+        'Đăng nhập thành công!',
+        'Thành công'
+      );
+
+    }
    //Phân loại Role đê hiển thị button edit 
    checkRole():boolean{
     if(this.authservice.getAccount()?.roleName=="ADMIN")

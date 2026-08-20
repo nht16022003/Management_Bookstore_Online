@@ -13,6 +13,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { AddProductComponent } from './UI/Page/product/add-product/add-product-page.component';
 import { EditProductComponent } from './UI/Page/product/edit-product/edit-product-page.component';
 import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component';
+import { FileUploadComponent } from './UI/Page/file-upload_page/file-upload-page.component';
 
 const routes: Routes = [
 
@@ -57,6 +58,10 @@ const routes: Routes = [
       {
         path:'audit-log',
         component:AuditLogComponent
+      },
+      {
+        path:'admin/upload',
+        component:FileUploadComponent
       }
     
     ]

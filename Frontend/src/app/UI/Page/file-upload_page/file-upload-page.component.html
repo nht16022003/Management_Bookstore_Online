@@ -1,0 +1,129 @@
+<div class="upload-container">
+
+  <div class="upload-card">
+
+    <!-- Tiêu đề -->
+    <h2 class="upload-title">
+      Upload hình ảnh
+    </h2>
+
+    <p class="upload-description">
+      Chọn hình ảnh và tải lên hệ thống
+    </p>
+
+
+    <!-- Chọn file -->
+    <div class="file-input-wrapper">
+
+      <label class="file-label">
+        Chọn hình ảnh
+      </label>
+
+      <input
+        type="file"
+        class="file-input"
+        accept=".jpg,.jpeg,.png,.webp"
+        (change)="onFileSelected($event)"
+      >
+
+    </div>
+
+
+    <!-- Thông tin file -->
+    <div
+      class="file-info"
+      *ngIf="selectedFile">
+
+      <div class="file-name">
+
+        <span class="file-icon">
+          📷
+        </span>
+
+        <div>
+          <strong>
+            {{ selectedFile.name }}
+          </strong>
+
+          <small>
+            {{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB
+          </small>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Button Upload -->
+    <button
+      type="button"
+      class="upload-button"
+      [disabled]="!selectedFile"
+      (click)="uploadFile()">
+
+      Upload file
+
+    </button>
+
+
+    <!-- Progress -->
+    <div
+      class="progress-container"
+      *ngIf="uploadProgress > 0">
+
+      <div class="progress-header">
+
+        <span>
+          Đang tải lên...
+        </span>
+
+        <span>
+          {{ uploadProgress }}%
+        </span>
+
+      </div>
+
+      <div class="progress">
+
+        <div
+          class="progress-bar"
+          [style.width.%]="uploadProgress">
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Upload thành công -->
+    <div
+      class="success-message"
+      *ngIf="imageUrl">
+
+      Upload thành công!
+
+    </div>
+
+
+    <!-- Preview -->
+    <div
+      class="preview-container"
+      *ngIf="imageUrl">
+
+      <h3>
+        Hình ảnh đã upload
+      </h3>
+
+      <img
+        [src]="imageUrl"
+        alt="Uploaded image"
+        class="preview-image"
+      >
+
+    </div>
+
+  </div>
+
+</div>

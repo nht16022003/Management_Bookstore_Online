@@ -1,8 +1,10 @@
 ﻿using ManagementBTOnline_API.Data;
+using ManagementBTOnline_API.Filters;
 using ManagementBTOnline_API.Models.BookManagement;
+using ManagementBTOnline_API.Models.ErrorResponse; //sử dụng ErrrorResponse để gom lỗi
+using ManagementBTOnline_API.Models.ErrorResponse.cs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ManagementBTOnline_API.Filters;
 
 namespace ManagementBTOnline_API.Controllers
 {
@@ -216,7 +218,13 @@ namespace ManagementBTOnline_API.Controllers
 
             if (book == null)
             {
-                return NotFound();
+                return NotFound(new ErrorResponseModel
+                {
+                    StatusCode = 404,
+                    Message = "Không tìm thấy sách",
+                    Error = "Not found",
+                    Timestamp = DateTime.UtcNow
+                });
             }
 
             return Ok(book);

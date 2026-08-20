@@ -47,16 +47,16 @@ export class EditProductComponent implements OnInit {
     ngOnInit(): void {
 
         // Lấy danh sách danh mục
-    this.categoryService.getCategories().subscribe(
-        data => {
-            this.categories = data;
+       this.categoryService.getCategories().subscribe(
+            data => {
+                this.categories = data;
 
-            console.log('Categories:', this.categories);
-        },
-        error => {
-            console.log('Lỗi lấy danh mục:', error);
-        }
-    );
+                console.log('Categories:', this.categories);
+            },
+            error => {
+                console.log('Lỗi lấy danh mục:', error);
+            }
+        );
 
 
       const id = Number(

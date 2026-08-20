@@ -4,10 +4,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ManagementBTOnline_API.Middleware; //đăng ký Middleware
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+
+
 
 builder.Services.AddControllers();
 
@@ -15,20 +18,44 @@ builder.Services.AddScoped<AuditLogFilter>(); //Dang ky filter
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
+    // AddAuthentication: Sử dụng JWT Bearder để xác thực người dùng
+    //Back end sẽ tìm token ở Authorization: Bearer <token>
+
+    //AddJwtBearer: Token đó là  JWT và hãy sử dụng cơ chế JWT Bearer để kiểm tra nó
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+            //Luật kiểm tra JWT
+            ValidateIssuer = true, //JWT có được phát sinh đúng server mà mình tin hay không
+            ValidateAudience = true, //JWT có được cấp cho đúng đối tượng sử dụng không?
+            ValidateLifetime = true, //JWT còn hạn sử dụng không
+            ValidateIssuerSigningKey = true, //JWT có thực sự được ký bằng key mà Backend tin tưởng không?
 
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], //Issuer mà backend chấp nhận
+            ValidAudience = builder.Configuration["Jwt:Audience"], //Audience mà Backend chấp nhận.
 
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
                     builder.Configuration["Jwt:Key"]!
+                //key dùng để kiểm tra chữ ký JWT.
+                /*
+                 {
+                      "Jwt": {
+                        "Key": "my-super-secret-key"
+                      }
+                    }
+
+                    code lấy "my-super-secret-key"
+                    Encoding.UTF8.GetBytes(...) sử dụng khi kiểm tra chữ ký
+
+                    ASP.NET Core, khi nhận JWT từ Frontend, 
+                   hãy dùng JWT Bearer và chỉ chấp nhận token 
+                   nếu nó đúng người phát hành, đúng đối tượng, 
+                   chưa hết hạn và có chữ ký hợp lệ bằng secret key 
+                   của Server."
+
+                 
+                 */
                 )
             )
         };
@@ -56,7 +83,15 @@ builder.Services.AddCors(options =>
 });
 
 
-var app = builder.Build();
+//Build app
+// Add services to the container.
+var app = builder.Build(); //Tạo app
+
+app.UseStaticFiles(); //Mục đích: cho phép Angular/Browser truy cập file đã upload
+// wwwroot/uploads/images/abc.jpg
+//sẽ truy cập https://localhost:xxxx/uploads/images/abc.jpg
+
+app.UseMiddleware<GlobalExceptionMiddleware>(); //middlware
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

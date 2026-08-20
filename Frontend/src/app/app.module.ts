@@ -21,6 +21,11 @@ import { EditProductComponent } from './UI/Page/product/edit-product/edit-produc
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component';
+import { FileUploadComponent } from './UI/Page/file-upload_page/file-upload-page.component';
+
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,7 +41,9 @@ import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component'
     ListProductComponent,
     AddProductComponent,
     EditProductComponent,
-    AuditLogComponent
+    AuditLogComponent,
+    FileUploadComponent,
+    
   
     
   ],
@@ -45,7 +52,14 @@ import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component'
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    CommonModule
+    CommonModule,
+    BrowserAnimationsModule,
+
+    ToastrModule.forRoot({
+      timeOut:3000,
+      positionClass:'toast-top-right',
+      preventDuplicates:true
+    })
     
   ],
   providers: [
@@ -53,6 +67,11 @@ import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component'
         provide: HTTP_INTERCEPTORS,
         useClass: AuthInterceptor,
         multi: true
+    },
+    {
+      provide:HTTP_INTERCEPTORS,
+      useClass:ErrorInterceptor,
+      multi:true
     }
   ],
   bootstrap: [AppComponent]
