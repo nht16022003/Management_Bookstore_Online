@@ -38,7 +38,7 @@ export class LoginPageComponent {
    this.accountservice.getAccount(this.newAc).subscribe(response =>{
     console.log(response);
     //Đăng nhập thành công !
-    this.authservice.login(response);
+    this.authservice.login(response); //truyền response sang cho authservice
 
     this.nofitication.success('DANG NHAP THANH CONG', 'WELCOME');
 

@@ -10,7 +10,6 @@
     <!-- Tên sách -->
     <div class="form-group">
       <label for="bookName">Tên sách</label>
-
       <input
         type="text"
         id="bookName"
@@ -24,7 +23,6 @@
     <!-- Giá -->
     <div class="form-group">
       <label for="price">Giá</label>
-
       <input
         type="number"
         id="price"
@@ -39,7 +37,6 @@
     <!-- Số lượng -->
     <div class="form-group">
       <label for="quantity">Số lượng</label>
-
       <input
         type="number"
         id="quantity"
@@ -54,7 +51,6 @@
     <!-- Danh mục -->
     <div class="form-group">
       <label for="category">Danh mục</label>
-
       <select
         id="category"
         name="id_Category"
@@ -62,7 +58,6 @@
         required
       >
         <option value="">-- Chọn danh mục --</option>
-
         <option
           *ngFor="let category of categories"
           [value]="category.id_Category"
@@ -72,23 +67,71 @@
       </select>
     </div>
 
-    <!-- Hình ảnh -->
+    <!-- ============================================ -->
+    <!-- HÌNH ẢNH — Upload Inline                     -->
+    <!-- ============================================ -->
     <div class="form-group">
-      <label for="imageURL">URL hình ảnh</label>
+      <label>Hình ảnh sách</label>
 
-      <input
-        type="text"
-        id="imageURL"
-        name="imageURL"
-        [(ngModel)]="book.imageURL"
-        placeholder="Nhập URL hình ảnh"
+      <!-- Vùng kéo thả / chọn file -->
+      <div
+        class="upload-zone"
+        [class.upload-zone--has-image]="book.imageURL"
+        [class.upload-zone--uploading]="isUploading"
+        (click)="fileInput.click()"
       >
+
+        <!-- Icon upload (khi chưa có ảnh) -->
+        <div class="upload-placeholder" *ngIf="!book.imageURL && !isUploading">
+          <div class="upload-icon">📷</div>
+          <p class="upload-hint">Nhấn để chọn ảnh</p>
+          <p class="upload-hint-sub">JPG, PNG, WEBP · Tối đa 10MB</p>
+        </div>
+
+        <!-- Progress bar (khi đang upload) -->
+        <div class="upload-uploading" *ngIf="isUploading">
+          <div class="spinner"></div>
+          <p>Đang tải ảnh lên... {{ uploadProgress }}%</p>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" [style.width.%]="uploadProgress"></div>
+          </div>
+        </div>
+
+        <!-- Preview ảnh (sau khi upload xong) -->
+        <div class="upload-preview" *ngIf="book.imageURL && !isUploading">
+          <img [src]="book.imageURL" alt="Book preview" class="preview-img">
+          <div class="preview-overlay">
+            <span class="change-text">🔄 Đổi ảnh</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Input file ẩn -->
+      <input
+        #fileInput
+        type="file"
+        accept=".jpg,.jpeg,.png,.webp"
+        class="file-input-hidden"
+        (change)="onFileSelected($event)"
+      >
+
+      <!-- Nút xóa ảnh -->
+      <button
+        type="button"
+        class="btn-remove-image"
+        *ngIf="book.imageURL && !isUploading"
+        (click)="removeImage()"
+      >
+        ✕ Xóa ảnh
+      </button>
+
     </div>
+    <!-- END HÌNH ẢNH -->
 
     <!-- Mô tả -->
     <div class="form-group">
       <label for="description">Mô tả</label>
-
       <textarea
         id="description"
         name="description"
@@ -96,19 +139,6 @@
         rows="5"
         placeholder="Nhập mô tả sách"
       ></textarea>
-    </div>
-
-    <!-- Preview ảnh -->
-    <div
-      class="image-preview"
-      *ngIf="book.imageURL"
-    >
-      <p>Xem trước hình ảnh</p>
-
-      <img
-        [src]="book.imageURL"
-        alt="Book image"
-      >
     </div>
 
     <!-- Button -->
@@ -125,9 +155,9 @@
       <button
         type="submit"
         class="btn-submit"
-        [disabled]="bookForm.invalid"
+        [disabled]="bookForm.invalid || isUploading"
       >
-        Thêm sách
+        {{ isUploading ? 'Đang upload...' : 'Thêm sách' }}
       </button>
 
     </div>

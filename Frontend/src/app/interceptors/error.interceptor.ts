@@ -33,9 +33,9 @@ export class ErrorInterceptor implements HttpInterceptor {
 
         console.log('HTTP Error:', error);
 
-        // =========================
+        
         // 400 Bad Request
-        // =========================
+       
         if (error.status === 400) {
 
           const message =
@@ -51,11 +51,11 @@ export class ErrorInterceptor implements HttpInterceptor {
         }
 
 
-        // =========================
+       
         // 401 Unauthorized
-        // =========================
+       
         else if (error.status === 401) {
-
+ 
           this.notification.warning(
             'Sai thông tin đăng nhập.',
             'Đăng nhập lại'
@@ -69,9 +69,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         }
 
 
-        // =========================
+       
         // 403 Forbidden
-        // =========================
+       
         else if (error.status === 403) {
 
           this.notification.error(
@@ -81,9 +81,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         }
 
 
-        // =========================
+      
         // 404 Not Found
-        // =========================
+     
         else if (error.status === 404) {
 
           const message =
@@ -99,9 +99,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         }
 
 
-        // =========================
+       
         // 500 Internal Server Error
-        // =========================
+        
         else if (error.status === 500) {
 
           this.notification.error(
@@ -111,9 +111,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         }
 
 
-        // =========================
+        
         // Lỗi khác
-        // =========================
+       
         else {
 
           this.notification.error(

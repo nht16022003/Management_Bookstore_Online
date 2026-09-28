@@ -12,12 +12,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using ManagementBTOnline_API.Filters;
 
 
 namespace ManagementBTOnline_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ServiceFilter(typeof(AuditLogFilter))]
     public class AccountController : Controller
     {
         private readonly ApplicationDBContext _context;
@@ -55,14 +57,14 @@ namespace ManagementBTOnline_API.Controllers
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
                     _configuration["Jwt:Key"]! //lấy key trong appseting.json 
-                    //sau đó chuyển thành chuỗi byte[]
+                                               //sau đó chuyển thành chuỗi byte[]
                 )
             );
 
             var credentials = new SigningCredentials(
                 key,
                 SecurityAlgorithms.HmacSha256
-                //dùng thuật toán HMAC-SHA256 để ký JWT
+            //dùng thuật toán HMAC-SHA256 để ký JWT
             );
 
             var token = new JwtSecurityToken(
@@ -70,7 +72,7 @@ namespace ManagementBTOnline_API.Controllers
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(2),//JWT có 2 giờ kể từ thời điểm tạo
-                //Sau 2 giờ angular gửi jwt đến core validatetime token hết hạn ra 401 Unauthorized
+                                                     //Sau 2 giờ angular gửi jwt đến core validatetime token hết hạn ra 401 Unauthorized
                 signingCredentials: credentials
             );
 
@@ -104,7 +106,7 @@ namespace ManagementBTOnline_API.Controllers
                 data.hashPassword,
                 dto.hashPassword
                 );
-                
+
             if (passwordResult == PasswordVerificationResult.Failed)
             {
                 return Unauthorized("Sai tài khoản hoặc mật khẩu");
@@ -116,7 +118,7 @@ namespace ManagementBTOnline_API.Controllers
                 id = data.id,
                 id_USER = data.User.id_User,
                 status = data.status,
-                accountName = data.userName, 
+                accountName = data.userName,
                 roleName = data.User.Role.roleName,
                 userId = data.User.id_User
             };
@@ -167,7 +169,7 @@ namespace ManagementBTOnline_API.Controllers
               ).ToListAsync();*/
 
             var token = GenerateJwtToken(result);
-            return Ok( new { result, token });
+            return Ok(new { result, token });
         }
 
         [HttpPost("register")]
@@ -183,7 +185,7 @@ namespace ManagementBTOnline_API.Controllers
                 user_Address = dto.user_Address,
                 user_Phone = dto.user_Phone,
                 user_Email = dto.user_Email,
-                
+
             };
 
             _context.Users.Add(user);
@@ -201,18 +203,18 @@ namespace ManagementBTOnline_API.Controllers
             var accountDTO = new AccountDTO()
             {
                 userName = account.userName,
-                hashPassword = account.hashPassword, 
-                id_USER = account.id_USER, 
+                hashPassword = account.hashPassword,
+                id_USER = account.id_USER,
                 status = account.status,
             };
 
-            
+
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
 
             return Ok(accountDTO);
         }
-            
+
 
     }
 }

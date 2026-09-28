@@ -1,9 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BookModel } from 'src/app/models/BookModel';
 import { BookService } from 'src/app/services/Book_Service/book.service';
-import { OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
@@ -43,9 +40,6 @@ export class ListProductComponent implements OnInit {
         this.totalItems = data.totalItems;
         
         console.log(this.books);
-      },
-      error => {
-        alert("Không load được sách");
       }
      )
   }

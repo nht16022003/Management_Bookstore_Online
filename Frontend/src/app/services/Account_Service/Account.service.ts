@@ -14,13 +14,13 @@ export class AccountService{
             account: AccountModel;
             token: string;
         }>(
-            "https://localhost:44314/api/Account/login",
+            "http://localhost:5144/api/Account/login",
             result
         );
 
     }
     regisAccount(account: RegisterModel){
-        return this.http.post<RegisterModel>("https://localhost:44314/api/Account/register", account);
+        return this.http.post<RegisterModel>("http://localhost:5144/api/Account/register", account);
     }
     /**
      * upDateStudent(student: student)

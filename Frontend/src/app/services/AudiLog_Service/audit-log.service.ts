@@ -8,7 +8,7 @@ import { AuditLogModel } from 'src/app/models/AuditLogModel';
 export class AuditLogService {
 
     private apiUrl =
-        'https://localhost:44314/api/AuditLog';
+        'http://localhost:5144/api/AuditLog';
 
     constructor(
         private http: HttpClient

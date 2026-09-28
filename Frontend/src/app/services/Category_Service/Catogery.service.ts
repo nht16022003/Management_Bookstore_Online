@@ -10,7 +10,7 @@ export class CategoryService{
     
     getCategories(){
         return this.http.get<CategoryModel[]>
-        ("https://localhost:44314/api/Category");
+        ("http://localhost:5144/api/Category");
     }
     /**
      * upDateStudent(student: student)

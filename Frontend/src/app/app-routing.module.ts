@@ -14,6 +14,7 @@ import { AddProductComponent } from './UI/Page/product/add-product/add-product-p
 import { EditProductComponent } from './UI/Page/product/edit-product/edit-product-page.component';
 import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component';
 import { FileUploadComponent } from './UI/Page/file-upload_page/file-upload-page.component';
+import { DashboardComponent } from './UI/Page/dashboard/dashboard-page.component';
 
 const routes: Routes = [
 
@@ -25,6 +26,11 @@ const routes: Routes = [
       {
         path: '',
         component: HomePageComponent
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: 'listproduct',

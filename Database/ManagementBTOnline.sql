@@ -56,7 +56,7 @@ WHERE ID_USER = 10
 
 DELETE
 FROM ACCOUNTS
-WHERE ID = 1
+WHERE ID = 5
 
 ALTER TABLE ACCOUNTS
 ALTER COLUMN HashPassword NVARCHAR(255) NOT NULL
@@ -261,6 +261,30 @@ CREATE TABLE AuditLogs
 );
 
 SELECT * FROM AuditLogs;
+
+INSERT INTO AuditLogs
+(
+    UserId,
+    UserName,
+    Action,
+    ControllerName,
+    ActionName,
+    Description,
+    CreatedAt
+)
+VALUES
+(
+    10,
+    N'Nguyen Hoang Tuan',
+    N'Update',
+    N'Category',
+    N'editCategory',
+    N'Sua du lieu tai Category',
+    GETDATE()
+);
+
+SELECT a.USERNAME, a.HashPassword, r.ROLE_NAME FROM USERS u, ACCOUNTS a, ROLES r
+Where u.ID_USER = a.ID_USER and u.ID_ROLE = r.ID_ROLE
 
 DROP TABLE BOOKS
 DROP TABLE CATEGORIES

@@ -22,6 +22,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuditLogComponent } from './UI/Page/audit-log/audit-log-page.component';
 import { FileUploadComponent } from './UI/Page/file-upload_page/file-upload-page.component';
+import { DashboardComponent } from './UI/Page/dashboard/dashboard-page.component';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
@@ -34,7 +35,6 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
     Header,
     ListGroupComponent,
     MainLayoutComponent,
-    ListGroupComponent,
     WrongAccountLoginComponent,
     RegisterComponent,
     RegisterSucessComponent,
@@ -43,9 +43,7 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
     EditProductComponent,
     AuditLogComponent,
     FileUploadComponent,
-    
-  
-    
+    DashboardComponent
   ],
   imports: [
     BrowserModule,

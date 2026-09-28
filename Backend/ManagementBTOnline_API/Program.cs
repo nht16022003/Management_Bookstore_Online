@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using ManagementBTOnline_API.Middleware; //đăng ký Middleware
+using ManagementBTOnline_API.Middleware;
+using ManagementBTOnline_API.Hubs; //đăng ký Middleware
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-
+//Đăng ký dịch vụ SignLR
+builder.Services.AddSignalR();
 
 
 builder.Services.AddControllers();
@@ -27,7 +29,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             //Luật kiểm tra JWT
             ValidateIssuer = true, //JWT có được phát sinh đúng server mà mình tin hay không
+            //Khi JWT quay trở lại Backend, nói :""Tôi chỉ chấp nhận JWT có iss = ManagementBTOnline."
+
             ValidateAudience = true, //JWT có được cấp cho đúng đối tượng sử dụng không?
+            //"JWT này phải được cấp đúng cho ManagementBTOnlineFrontend."
+
             ValidateLifetime = true, //JWT còn hạn sử dụng không
             ValidateIssuerSigningKey = true, //JWT có thực sự được ký bằng key mà Backend tin tưởng không?
 
@@ -72,13 +78,15 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
         );
 });
 
+//Cấu hình CORS bắt buộc cho SignaLR phải có 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AngularPolicy", policy =>
     {
         policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); //bắt buộc cho WebSocket/ SignaLR
     });
 });
 
@@ -86,6 +94,11 @@ builder.Services.AddCors(options =>
 //Build app
 // Add services to the container.
 var app = builder.Build(); //Tạo app
+
+app.UseCors("AllowAngular");
+
+//Map endpoint của SignaLR Hub
+app.MapHub<DashboardHub>("/hub/dashboard");
 
 app.UseStaticFiles(); //Mục đích: cho phép Angular/Browser truy cập file đã upload
 // wwwroot/uploads/images/abc.jpg

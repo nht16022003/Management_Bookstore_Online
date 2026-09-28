@@ -1,7 +1,9 @@
 ﻿using ManagementBTOnline_API.Data;
+using ManagementBTOnline_API.Hubs;
 using ManagementBTOnline_API.Models.AuditManagement;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace ManagementBTOnline_API.Filters
@@ -9,11 +11,14 @@ namespace ManagementBTOnline_API.Filters
     public class AuditLogFilter : IAsyncActionFilter
     {
         private readonly ApplicationDBContext _context;
+        private readonly IHubContext<DashboardHub> _hubContext;
 
-        public AuditLogFilter(ApplicationDBContext context)
+        public AuditLogFilter(ApplicationDBContext context, IHubContext<DashboardHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
+
 
         public async Task OnActionExecutionAsync(
             ActionExecutingContext context,
@@ -65,9 +70,8 @@ namespace ManagementBTOnline_API.Filters
                 return;
             }
 
-            // =========================
+
             // Lấy thông tin từ JWT
-            // =========================
 
             string userName =
                 httpContext.User
@@ -111,9 +115,9 @@ namespace ManagementBTOnline_API.Filters
                 _ => ""
             };
 
-            // =========================
+
             // Tạo Audit Log
-            // =========================
+
 
             var auditLog = new AuditLogModel
             {
@@ -135,6 +139,18 @@ namespace ManagementBTOnline_API.Filters
             _context.AuditLogs.Add(auditLog);
 
             await _context.SaveChangesAsync();
+
+            //Phát sóng tín hiệu real-time cho tất cả client dashboard:
+            await _hubContext.Clients.All.SendAsync("ReceiveDashboardUpdate", new
+            {
+                action = auditLog.Action,
+                controllerName = auditLog.ControllerName,
+                actionName = auditLog.ActionName,
+                description = auditLog.Description,
+                userName = auditLog.UserName,
+                dateString = auditLog.CreatedAt.ToString("dd/MM"),
+                createdAt = auditLog.CreatedAt
+            });
         }
     }
 }

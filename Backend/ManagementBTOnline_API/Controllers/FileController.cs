@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ManagementBTOnline_API.Controllers
 {
@@ -9,22 +10,22 @@ namespace ManagementBTOnline_API.Controllers
 
         private readonly IWebHostEnvironment _enviroment;
 
-        public FileController (IWebHostEnvironment enviroment)
+        public FileController(IWebHostEnvironment enviroment)
         {
             _enviroment = enviroment;
         }
 
         [HttpPost("upload")]
 
-        public async Task<IActionResult> Upload(IFormFile file)
+        public async Task<IActionResult> Upload(IFormFile file) //Truyền rì quét từ Frontend vào IFormFile 
         {
-            if(file == null || file.Length == 0)
+            if (file == null || file.Length == 0)
             {
                 return BadRequest("Chua chon file");
             }
 
             //Gioi han MB
-            if(file.Length > 10 * 1024 * 1024)
+            if (file.Length > 10 * 1024 * 1024)
             {
                 return BadRequest("File khong duoc qua 10MB");
             }
@@ -78,13 +79,28 @@ namespace ManagementBTOnline_API.Controllers
             var fileUrl =
                 $"{Request.Scheme}://{Request.Host}/uploads/images/{fileName}";
 
+            //Lấy token hiện tại từ header
+            var authHeader = Request.Headers["Authorization"].ToString();
+            var toKenHienHanh = authHeader.StartsWith("Bearer") ? authHeader.Substring(7) : authHeader;
+
+
+            //Lấy thông tin tài khoản đăng đang nhập từ JWT Claims
+            var taiKhoanHienHanh = new
+            {
+                userID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                username = User.FindFirst(ClaimTypes.Name)?.Value,
+                role = User.FindFirst(ClaimTypes.Role)?.Value
+            };
+
             return Ok(new
             {
                 message = "Upload thành công",
                 fileName = fileName,
-                fileUrl = fileUrl
+                fileUrl = fileUrl,
+                token = toKenHienHanh,
+                taikhoan = taiKhoanHienHanh
             });
         }
-        
+
     }
 }
