@@ -45,4 +45,18 @@ export class DashboardService {
   getUsersByRole() {
     return this.http.get<UserByRole[]>(`${this.apiUrl}/users-by-role`);
   }
+
+  // [TASK 8] Lấy toàn bộ dữ liệu thống kê tổng hợp cho Master Filter
+  getMasterData(fromDate?: string, toDate?: string) {
+    let params = new HttpParams();
+    if (fromDate && toDate) {
+      params = params.set('fromDate', fromDate).set('toDate', toDate);
+    }
+    return this.http.get<{
+      summary: DashboardSummary;
+      auditByDay: AuditLogByDay[];
+      booksByCategory: BookByCategory[];
+      usersByRole: UserByRole[];
+    }>(`${this.apiUrl}/master-data`, { params });
+  }
 }

@@ -2,9 +2,10 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { DashboardService } from 'src/app/services/Dashboard_Service/dashboard.service';
 import { DashboardSummary, AuditLogByDay, BookByCategory, UserByRole } from 'src/app/models/DashboardModel';
 import { SignalrService, DashboardRealtimeMessage } from 'src/app/services/SignalR_Service/signalr.service';
-import { forkJoin, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { NotificationService } from 'src/app/services/NotificationService/notification.service';
 import { signal, computed, effect, EffectRef } from 'src/app/core/signals/signal';
+import { GridsterConfig, GridsterItem, GridType, DisplayGrid, CompactType } from 'angular-gridster2';
 
 // Thư viện để xuất PDF
 import jsPDF from 'jspdf';
@@ -12,6 +13,14 @@ import html2canvas from 'html2canvas';
 
 // Khai báo Chart là any vì Chart.js được load qua CDN (không phải npm module)
 declare const Chart: any;
+
+export interface DashboardWidget extends GridsterItem {
+  id: string;
+  title: string;
+  icon?: string;
+  minItemRows?: number;
+  minItemCols?: number;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -38,7 +47,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly booksByCategory = signal<BookByCategory[]>([]);
   readonly usersByRole = signal<UserByRole[]>([]);
 
-  // ── Date Range Picker State (Quản lý bằng Signals) ──────────────────────
+  // ── Master Filter State (Angular Signals) ───────────────────────────────
   readonly fromDate = signal<string>(this.getDefaultFromDate(7));
   readonly toDate = signal<string>(this.getTodayString());
 
@@ -57,6 +66,18 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly totalUsersFromRoles = computed(() => {
     return this.usersByRole().reduce((sum, r) => sum + r.count, 0);
   });
+
+  // ── Gridster 2 Configuration & Widgets State ───────────────────────────
+  gridsterOptions!: GridsterConfig;
+
+  readonly defaultWidgets: DashboardWidget[] = [
+    { id: 'stat-cards', title: 'Thống kê tổng quan', cols: 12, rows: 2, x: 0, y: 0, minItemRows: 2, minItemCols: 6 },
+    { id: 'line-chart', title: 'Hoạt động hệ thống theo ngày', cols: 6, rows: 6, x: 0, y: 2, minItemRows: 4, minItemCols: 4 },
+    { id: 'bar-chart', title: 'Phân bổ người dùng theo vai trò', cols: 6, rows: 6, x: 6, y: 2, minItemRows: 4, minItemCols: 4 },
+    { id: 'books-table', title: 'Chi tiết phân bổ sách theo danh mục', cols: 12, rows: 5, x: 0, y: 8, minItemRows: 3, minItemCols: 6 }
+  ];
+
+  dashboardWidgets = signal<DashboardWidget[]>([]);
 
   // ── Chart Instances ────────────────────────────────────────────────────
   private lineChart: any = null;   // Line Chart — Audit Log theo ngày
@@ -79,17 +100,107 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Lifecycle Hooks ────────────────────────────────────────────────────
 
   ngOnInit(): void {
-    // Đăng ký side-effect theo dõi trạng thái Real-time bằng effect()
+    // 1. Khởi tạo cấu hình Gridster 2 kéo thả và thay đổi kích thước
+    this.initGridsterOptions();
+
+    // 2. Phục hồi layout từ localStorage hoặc dùng mặc định
+    this.initLayout();
+
+    // 3. Đăng ký side-effect theo dõi trạng thái Real-time bằng effect()
     this.stateEffectRef = effect(() => {
       const connected = this.isRealtimeConnected();
       console.log(`[Dashboard Signal State] Trạng thái kết nối Real-time: ${connected ? 'ONLINE' : 'CONNECTING...'}`);
     });
 
+    // 4. Tải dữ liệu Dashboard ban đầu bằng Master Filter API
     this.loadDashboardData();
     this.initSignalR();
   }
 
-  // Khởi tạo và lắng nghe kết nối real time
+  // Khởi tạo tùy chọn Gridster 2
+  private initGridsterOptions(): void {
+    this.gridsterOptions = {
+      gridType: GridType.ScrollVertical,
+      displayGrid: DisplayGrid.OnDragAndResize,
+      compactType: CompactType.None,
+      pushItems: true,
+      draggable: {
+        enabled: true,
+        ignoreContentClass: 'gridster-no-drag'
+      },
+      resizable: {
+        enabled: true
+      },
+      minCols: 12,
+      maxCols: 12,
+      minRows: 12,
+      defaultItemCols: 6,
+      defaultItemRows: 5,
+      itemChangeCallback: () => this.saveDashboardLayout(),
+      itemResizeCallback: (item) => this.onWidgetResize(item)
+    };
+  }
+
+  // ── Layout Management (Lưu và phục hồi vào localStorage) ────────────────
+
+  initLayout(): void {
+    try {
+      const saved = localStorage.getItem('dashboard_layout');
+      if (saved) {
+        const parsed: any[] = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const merged = this.defaultWidgets.map(def => {
+            const found = parsed.find(p => p.id === def.id);
+            return found ? { ...def, x: found.x, y: found.y, rows: found.rows, cols: found.cols } : def;
+          });
+          this.dashboardWidgets.set(merged);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Lỗi phân tích cú pháp layout từ localStorage, sử dụng layout mặc định', err);
+    }
+    this.dashboardWidgets.set(this.defaultWidgets.map(w => ({ ...w })));
+  }
+
+  saveDashboardLayout(): void {
+    try {
+      const current = this.dashboardWidgets().map(w => ({
+        id: w.id,
+        x: w.x,
+        y: w.y,
+        rows: w.rows,
+        cols: w.cols
+      }));
+      localStorage.setItem('dashboard_layout', JSON.stringify(current));
+    } catch (err) {
+      console.error('Không thể lưu layout Dashboard vào localStorage', err);
+    }
+  }
+
+  resetLayout(): void {
+    localStorage.removeItem('dashboard_layout');
+    this.dashboardWidgets.set(this.defaultWidgets.map(w => ({ ...w })));
+    if (this.gridsterOptions.api && this.gridsterOptions.api.optionsChanged) {
+      this.gridsterOptions.api.optionsChanged();
+    }
+    setTimeout(() => {
+      this.lineChart?.resize();
+      this.barChart?.resize();
+    }, 150);
+    this.notification.info('Đã khôi phục bố cục Dashboard về mặc định ban đầu.', 'Bố cục mặc định');
+  }
+
+  onWidgetResize(item: GridsterItem): void {
+    this.saveDashboardLayout();
+    setTimeout(() => {
+      if (this.lineChart) { this.lineChart.resize(); }
+      if (this.barChart) { this.barChart.resize(); }
+    }, 100);
+  }
+
+  // ── SignalR Real-time Hub ──────────────────────────────────────────────
+
   private initSignalR(): void {
     this.signalrService.startConnection();
 
@@ -97,7 +208,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isRealtimeConnected.set(status);
     });
 
-    // Bắt sự kiện có thao tác mới phát sinh trong hệ thống:
     this.signalrSub = this.signalrService.dashboardUpdate$.subscribe(
       (msg: DashboardRealtimeMessage) => {
         this.handleRealtimeUpdate(msg);
@@ -105,35 +215,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  // Xử lý cập nhật số liệu từ Dashboard API hiện có (giữ nguyên bộ lọc thời gian)
   private handleRealtimeUpdate(msg: DashboardRealtimeMessage): void {
-    // A. Tải lại Summary chính xác từ API
-    this.dashboardService.getSummary().subscribe(summary => {
-      this.summary.set(summary);
-    });
-
-    // B. Tải lại dữ liệu biểu đồ audit theo đúng bộ lọc thời gian đang áp dụng
-    this.dashboardService.getAuditByDay(7, this.fromDate(), this.toDate()).subscribe(data => {
-      this.auditByDay.set(data);
+    // Tải lại dữ liệu thống kê từ API bằng Master Filter
+    this.dashboardService.getMasterData(this.fromDate(), this.toDate()).subscribe(res => {
+      this.summary.set(res.summary);
+      this.auditByDay.set(res.auditByDay);
+      this.booksByCategory.set(res.booksByCategory);
+      this.usersByRole.set(res.usersByRole);
       this.updateLineChart();
+      this.renderBarChart();
     });
 
-    // C. Cập nhật bảng phân bổ sách nếu thao tác liên quan tới sách hoặc danh mục
-    if (!msg.controllerName || msg.controllerName === 'Book' || msg.controllerName === 'Category') {
-      this.dashboardService.getBooksByCategory().subscribe(books => {
-        this.booksByCategory.set(books);
-      });
-    }
-
-    // D. Cập nhật biểu đồ vai trò người dùng nếu liên quan tới Account/User
-    if (msg.controllerName === 'Account' || msg.controllerName === 'User') {
-      this.dashboardService.getUsersByRole().subscribe(roles => {
-        this.usersByRole.set(roles);
-        this.renderBarChart();
-      });
-    }
-
-    // E. Thông báo nhẹ góc màn hình
     this.notification.info(
       `${msg.userName} vừa thực hiện: ${msg.description}`,
       '⚡ Hoạt động mới'
@@ -148,7 +240,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Hủy đăng ký SignalR để tránh rò rỉ bộ nhớ
     if (this.signalrSub) {
       this.signalrSub.unsubscribe();
     }
@@ -160,43 +251,37 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.signalrService.stopConnection();
 
-    // Dọn dẹp instance chart khi rời trang, tránh memory leak
     if (this.lineChart) { this.lineChart.destroy(); this.lineChart = null; }
     if (this.barChart) { this.barChart.destroy(); this.barChart = null; }
   }
 
   // ── Date Helpers ───────────────────────────────────────────────────────
 
-  // Trả về chuỗi "yyyy-MM-dd" cho N ngày trước hôm nay
   getDefaultFromDate(daysAgo: number): string {
     const d = new Date();
     d.setDate(d.getDate() - daysAgo + 1);
     return this.formatDateForInput(d);
   }
 
-  // Trả về chuỗi "yyyy-MM-dd" cho hôm nay
   getTodayString(): string {
     return this.formatDateForInput(new Date());
   }
 
-  // Format Date → "yyyy-MM-dd" (định dạng chuẩn của input[type="date"])
-  private formatDateForInput(date: Date): string {  // private OK, chỉ helper nội bộ
+  private formatDateForInput(date: Date): string {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
   }
 
-  // ── Date Range Picker Handler ──────────────────────────────────────────
+  // ── Master Filter Handlers ─────────────────────────────────────────────
 
-  // Thiết lập nhanh khoảng ngày theo preset
   setPresetDays(days: number): void {
     this.fromDate.set(this.getDefaultFromDate(days));
     this.toDate.set(this.getTodayString());
     this.onDateChange();
   }
 
-  // Được gọi mỗi khi người dùng thay đổi fromDate hoặc toDate
   onDateChange(): void {
     const currentFrom = this.fromDate();
     const currentTo = this.toDate();
@@ -205,45 +290,48 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.isChartUpdating.set(true);
 
-    // Chỉ gọi lại Service để lấy dữ liệu trong khoảng ngày mới
-    this.dashboardService.getAuditByDay(7, currentFrom, currentTo).subscribe(
-      data => {
-        this.auditByDay.set(data);
+    // Sử dụng endpoint master-data tối ưu bằng Raw SQL
+    this.dashboardService.getMasterData(currentFrom, currentTo).subscribe(
+      res => {
+        this.summary.set(res.summary);
+        this.auditByDay.set(res.auditByDay);
+        this.booksByCategory.set(res.booksByCategory);
+        this.usersByRole.set(res.usersByRole);
         this.isChartUpdating.set(false);
         this.updateLineChart();
+        this.renderBarChart();
+      },
+      err => {
+        this.isChartUpdating.set(false);
       }
     );
   }
 
-  // ── Load Data (lần đầu) ────────────────────────────────────────────────
+  // ── Load Data (Lần đầu bằng Master Data API) ───────────────────────────
 
   loadDashboardData(): void {
     this.isLoading.set(true);
 
-    // Gọi 4 API song song, chờ tất cả xong mới xử lý
-    forkJoin({
-      summary: this.dashboardService.getSummary(),
-      auditByDay: this.dashboardService.getAuditByDay(7, this.fromDate(), this.toDate()),
-      booksByCategory: this.dashboardService.getBooksByCategory(),
-      usersByRole: this.dashboardService.getUsersByRole()
-    }).subscribe(
-      results => {
-        this.summary.set(results.summary);
-        this.auditByDay.set(results.auditByDay);
-        this.booksByCategory.set(results.booksByCategory);
-        this.usersByRole.set(results.usersByRole);
+    this.dashboardService.getMasterData(this.fromDate(), this.toDate()).subscribe(
+      res => {
+        this.summary.set(res.summary);
+        this.auditByDay.set(res.auditByDay);
+        this.booksByCategory.set(res.booksByCategory);
+        this.usersByRole.set(res.usersByRole);
         this.isLoading.set(false);
         this.dataReady = true;
 
-        // Nếu view đã render → vẽ chart ngay
         if (this.viewReady) {
           setTimeout(() => this.renderCharts(), 0);
         }
+      },
+      err => {
+        this.isLoading.set(false);
       }
     );
   }
 
-  // ── Render Charts (lần đầu) ────────────────────────────────────────────
+  // ── Render Charts ──────────────────────────────────────────────────────
 
   private renderCharts(): void {
     this.renderLineChart();
@@ -305,7 +393,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Cập nhật Line Chart in-place khi đổi date range (animation mượt)
   private updateLineChart(): void {
     if (!this.lineChart) {
       this.renderLineChart();
@@ -383,16 +470,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // ── Xuất Báo Cáo PDF ───────────────────────────────────────────────────
+  // ── Dynamic PDF theo Layout Gridster Hiện Tại ──────────────────────────
 
   xuatBaoCaoPDF(): void {
-    // 1. Kiểm tra trạng thái sẵn sàng của Dashboard và dữ liệu biểu đồ
     if (this.isLoading() || this.isChartUpdating() || !this.dataReady) {
       this.notification.warning('Dữ liệu biểu đồ đang được tải hoặc cập nhật, vui lòng chờ trong giây lát...', 'Thông báo');
       return;
     }
 
-    // 2. Tìm phần tử HTML của màn hình Dashboard cần chụp
+    // Chụp phần tử chứa toàn bộ layout Gridster
     const phanTuCanChup = document.getElementById('dashboardReport');
     if (!phanTuCanChup) {
       this.notification.error('Không tìm thấy vùng dữ liệu Dashboard để xuất PDF.', 'Lỗi');
@@ -401,8 +487,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.dangTaoPDF.set(true);
 
+    // Chờ biểu đồ render hoàn tất animation trước khi chụp
     setTimeout(() => {
-      // 3. Dùng html2canvas chụp màn hình HTML thành Canvas chất lượng cao
       html2canvas(phanTuCanChup, {
         scale: 2,
         useCORS: true,
@@ -427,7 +513,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
         tepPDF.addImage(duLieuAnh, 'PNG', leX, viTriY, chieuRongKhaDung, chieuCaoAnh);
         chieuCaoConLai -= chieuCaoKhaDung;
 
-        // 7. Hỗ trợ chia trang tự động nếu Dashboard dài vượt quá 1 trang A4
+        // Chia nhiều trang tự động nếu layout Gridster dài hơn 1 trang A4
         while (chieuCaoConLai > 0) {
           viTriY -= chieuCaoKhaDung;
           tepPDF.addPage();
@@ -435,18 +521,20 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
           chieuCaoConLai -= chieuCaoKhaDung;
         }
 
-        const tenFile = `Dashboard_Report_${this.fromDate()}_den_${this.toDate()}.pdf`;
+        // Tên file theo định dạng chuẩn: Report_Dashboard_TuNgay_DenNgay.pdf
+        const tenFile = `Report_Dashboard_${this.fromDate()}_${this.toDate()}.pdf`;
         tepPDF.save(tenFile);
 
         this.dangTaoPDF.set(false);
-        this.notification.success('Đã tải xuống file báo cáo PDF thành công!', 'Thành công');
+        this.notification.success('Đã tải xuống file báo cáo PDF theo layout hiện tại thành công!', 'Thành công');
       }).catch(loi => {
         console.error('Lỗi trong quá trình xuất PDF:', loi);
         this.dangTaoPDF.set(false);
         this.notification.error('Không thể xuất file PDF. Vui lòng thử lại.', 'Lỗi');
       });
-    }, 100);
+    }, 200);
   }
 
 }
+
 

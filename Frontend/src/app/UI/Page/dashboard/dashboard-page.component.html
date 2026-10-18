@@ -1,104 +1,51 @@
 <div id="dashboardReport">
   <div class="dashboard-wrapper">
 
-  <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
-  <div class="dashboard-header">
-    <div class="header-left">
-      <h1 class="dashboard-title">📊 Dashboard</h1>
-      <p class="dashboard-sub">Tổng quan hệ thống — cập nhật theo thời gian thực</p>
+    <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+    <div class="dashboard-header">
+      <div class="header-left">
+        <h1 class="dashboard-title">📊 Dashboard</h1>
+        <p class="dashboard-sub">Tổng quan hệ thống — kéo thả widget & cập nhật theo thời gian thực</p>
+      </div>
+
+      <div class="header-actions" data-html2canvas-ignore="true">
+        <!-- Trạng thái kết nối Real-time -->
+        <div class="live-status-badge" [class.live-status-badge--connected]="isRealtimeConnected()">
+          <span class="live-dot"></span>
+          <span class="live-text">{{ isRealtimeConnected() ? 'LIVE Real-time' : 'Connecting...' }}</span>
+        </div>
+
+        <button 
+          type="button" 
+          class="btn-reset-layout" 
+          (click)="resetLayout()"
+          title="Khôi phục lại vị trí và kích thước widget ban đầu">
+          🔄 Đặt lại Layout
+        </button>
+
+        <button 
+          type="button" 
+          class="btn-export-pdf" 
+          (click)="xuatBaoCaoPDF()" 
+          [disabled]="dangTaoPDF() || isLoading()">
+          <span *ngIf="!dangTaoPDF()">📥 Xuất Báo Cáo PDF</span>
+          <span *ngIf="dangTaoPDF()">⏳ Đang tạo PDF...</span>
+        </button>
+
+        <span class="badge-admin">ADMIN</span>
+      </div>
     </div>
-    <div class="header-right">
-      <span class="badge-admin">ADMIN</span>
-    </div>
-    <button 
-      type="button" 
-      class="btn-export-pdf" 
-      data-html2canvas-ignore="true"
-      (click)="xuatBaoCaoPDF()" 
-      [disabled]="dangTaoPDF() || isLoading()">
-      <span *ngIf="!dangTaoPDF()">📥 Xuất Báo Cáo PDF</span>
-      <span *ngIf="dangTaoPDF()">⏳ Đang tạo PDF...</span>
-    </button>
-
-  </div>
-
-  <div class="header-right" data-html2canvas-ignore="true">
-  <!-- Trạng thái kết nối Real-time -->
-  <div class="live-status-badge" [class.live-status-badge--connected]="isRealtimeConnected()">
-    <span class="live-dot"></span>
-    <span class="live-text">{{ isRealtimeConnected() ? 'LIVE Real-time' : 'Connecting...' }}</span>
-  </div>
-  <span class="badge-admin">ADMIN</span>
-</div>
 
 
-
-  <!-- ══ LOADING ═════════════════════════════════════════════════════════ -->
-  <div class="loading-overlay" *ngIf="isLoading()">
-    <div class="spinner-ring"></div>
-    <p>Đang tải dữ liệu...</p>
-  </div>
-
-  <!-- ══ NỘI DUNG CHÍNH (hiện sau khi load xong isLoading() = False) ════════════════════════ -->
-  <div *ngIf="!isLoading()">
-
-    <!-- ── STAT CARDS ─────────────────────────────────────────────────── -->
-    <div class="stat-grid">
-
-      <!-- Tổng sách -->
-      <div class="stat-card stat-card--blue">
-        <div class="stat-icon">📚</div>
-        <div class="stat-info">
-          <span class="stat-value">{{ summary().totalBooks }}</span>
-          <span class="stat-label">Tổng số sách</span>
-        </div>
-        <div class="stat-bg-icon">📚</div>
-      </div>
-
-      <!-- Danh mục -->
-      <div class="stat-card stat-card--green">
-        <div class="stat-icon">🏷️</div>
-        <div class="stat-info">
-          <span class="stat-value">{{ summary().totalCategories }}</span>
-          <span class="stat-label">Danh mục</span>
-        </div>
-        <div class="stat-bg-icon">🏷️</div>
-      </div>
-
-      <!-- Người dùng -->
-      <div class="stat-card stat-card--purple">
-        <div class="stat-icon">👥</div>
-        <div class="stat-info">
-          <span class="stat-value">{{ summary().totalUsers }}</span>
-          <span class="stat-label">Người dùng</span>
-        </div>
-        <div class="stat-bg-icon">👥</div>
-      </div>
-
-      <!-- Audit Logs -->
-      <div class="stat-card stat-card--orange">
-        <div class="stat-icon">📋</div>
-        <div class="stat-info">
-          <span class="stat-value">{{ summary().totalAuditLogs }}</span>
-          <span class="stat-label">Nhật ký hoạt động</span>
-        </div>
-        <div class="stat-bg-icon">📋</div>
-      </div>
-
-    </div><!-- /stat-grid -->
-
-
-    <!-- ══ DATE RANGE PICKER ══════════════════════════════════════════════ -->
+    <!-- ══ MASTER FILTER (Dùng chung cho toàn bộ biểu đồ) ═════════════════ -->
     <div class="date-range-card">
-
       <div class="date-range-header">
         <span class="date-range-icon">📅</span>
-        <h3 class="date-range-title">Lọc theo khoảng thời gian</h3>
-        <span class="date-range-hint">Biểu đồ Audit Log sẽ tự cập nhật khi bạn đổi ngày</span>
+        <h3 class="date-range-title">Master Filter — Khoảng thời gian thống kê</h3>
+        <span class="date-range-hint">Tự động đồng bộ số liệu và làm mới tất cả widget</span>
       </div>
 
       <div class="date-range-controls">
-
         <div class="date-input-group">
           <label for="fromDateInput">Từ ngày</label>
           <input
@@ -135,112 +82,170 @@
           <button class="preset-btn" (click)="setPresetDays(30)">30 ngày</button>
         </div>
 
-        <!-- Loading indicator nhỏ -->
+        <!-- Loading indicator nhỏ khi đổi filter -->
         <div class="chart-updating-badge" *ngIf="isChartUpdating()" data-html2canvas-ignore="true">
           <div class="mini-spinner"></div>
-          <span>Đang cập nhật...</span>
+          <span>Đang cập nhật biểu đồ...</span>
         </div>
-
       </div>
-
     </div><!-- /date-range-card -->
 
 
-    <!-- ── CHARTS ROW ──────────────────────────────────────────────────── -->
-    <div class="charts-row">
-
-      <!-- Line Chart: Audit Log theo ngày (khoảng thời gian đã chọn) -->
-      <div class="chart-card chart-card--line">
-        <div class="chart-header">
-          <div>
-            <h3 class="chart-title">📈 Hoạt động hệ thống</h3>
-            <p class="chart-subtitle">{{ fromDate() }} → {{ toDate() }}</p>
-          </div>
-          <span class="chart-badge">{{ totalAuditInRange() }} thao tác</span>
-        </div>
-        <div class="chart-body">
-          <canvas id="lineChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Bar Chart: Phân bổ User theo Role -->
-      <div class="chart-card chart-card--bar">
-        <div class="chart-header">
-          <div>
-            <h3 class="chart-title">👥 Người dùng theo vai trò</h3>
-            <p class="chart-subtitle">Phân bổ ADMIN / STAFF / CUSTOMER</p>
-          </div>
-          <span class="chart-badge">{{ totalUsersFromRoles() }} người</span>
-        </div>
-
-        <!-- Empty state nếu chưa có dữ liệu -->
-        <div class="empty-state" *ngIf="usersByRole().length === 0">
-          <span>👤 Chưa có dữ liệu người dùng</span>
-        </div>
-
-        <div class="chart-body" *ngIf="usersByRole().length > 0">
-          <canvas id="barChart"></canvas>
-        </div>
-
-        <!-- Legend thủ công màu theo Role -->
-        <div class="role-legend" *ngIf="usersByRole().length > 0">
-          <div *ngFor="let item of usersByRole()" class="role-legend-item">
-            <span
-              class="role-dot"
-              [ngClass]="{
-                'dot-admin':    item.roleName === 'ADMIN',
-                'dot-staff':    item.roleName === 'STAFF',
-                'dot-customer': item.roleName === 'CUSTOMER'
-              }">
-            </span>
-            <span class="role-name">{{ item.roleName }}</span>
-            <span class="role-count">{{ item.count }} người</span>
-          </div>
-        </div>
-
-      </div>
-
-    </div><!-- /charts-row -->
-
-
-    <!-- ── BẢNG PHÂN BỔ SÁCH ───────────────────────────────────────────── -->
-    <div class="table-card" *ngIf="booksByCategory().length > 0">
-      <div class="chart-header">
-        <h3 class="chart-title">📑 Chi tiết phân bổ sách theo danh mục</h3>
-      </div>
-
-      <table class="stat-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Danh mục</th>
-            <th>Số sách</th>
-            <th>Tỷ lệ</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of booksByCategory(); let i = index">
-            <td class="td-index">{{ i + 1 }}</td>
-            <td class="td-name">{{ item.categoryName }}</td>
-            <td class="td-count">{{ item.count }}</td>
-            <td class="td-bar">
-              <div class="inline-bar">
-                <div
-                  class="inline-bar-fill"
-                  [style.width.%]="(item.count / summary().totalBooks) * 100"
-                ></div>
-                <span class="inline-bar-pct">
-                  {{ ((item.count / summary().totalBooks) * 100) | number:'1.1-1' }}%
-                </span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- ══ LOADING OVERLAY BAN ĐẦU ═════════════════════════════════════════ -->
+    <div class="loading-overlay" *ngIf="isLoading()">
+      <div class="spinner-ring"></div>
+      <p>Đang tải dữ liệu Dashboard...</p>
     </div>
 
-  </div><!-- /ngIf !isLoading() -->
 
-</div><!-- /dashboard-wrapper -->
+    <!-- ══ GRIDSTER 2 DASHBOARD WIDGETS ════════════════════════════════════ -->
+    <div id="dashboardGridsterContainer" *ngIf="!isLoading()">
+      <gridster [options]="gridsterOptions" class="dashboard-gridster">
+        <gridster-item [item]="widget" *ngFor="let widget of dashboardWidgets()">
 
-</div>
+          <!-- Thanh kéo thả Widget Header -->
+          <div class="widget-drag-handle" title="Kéo để di chuyển widget">
+            <div class="widget-title-area">
+              <span class="drag-dots">⠿</span>
+              <span class="widget-header-title">{{ widget.title }}</span>
+            </div>
+          </div>
+
+          <!-- Nội dung từng Widget -->
+          <div class="widget-body">
+
+            <!-- 1. WIDGET: Thống kê tổng quan -->
+            <ng-container *ngIf="widget.id === 'stat-cards'">
+              <div class="stat-grid">
+                <div class="stat-card stat-card--blue">
+                  <div class="stat-icon">📚</div>
+                  <div class="stat-info">
+                    <span class="stat-value">{{ summary().totalBooks }}</span>
+                    <span class="stat-label">Tổng số sách</span>
+                  </div>
+                  <div class="stat-bg-icon">📚</div>
+                </div>
+
+                <div class="stat-card stat-card--green">
+                  <div class="stat-icon">🏷️</div>
+                  <div class="stat-info">
+                    <span class="stat-value">{{ summary().totalCategories }}</span>
+                    <span class="stat-label">Danh mục</span>
+                  </div>
+                  <div class="stat-bg-icon">🏷️</div>
+                </div>
+
+                <div class="stat-card stat-card--purple">
+                  <div class="stat-icon">👥</div>
+                  <div class="stat-info">
+                    <span class="stat-value">{{ summary().totalUsers }}</span>
+                    <span class="stat-label">Người dùng</span>
+                  </div>
+                  <div class="stat-bg-icon">👥</div>
+                </div>
+
+                <div class="stat-card stat-card--orange">
+                  <div class="stat-icon">📋</div>
+                  <div class="stat-info">
+                    <span class="stat-value">{{ summary().totalAuditLogs }}</span>
+                    <span class="stat-label">Nhật ký hoạt động</span>
+                  </div>
+                  <div class="stat-bg-icon">📋</div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- 2. WIDGET: Line Chart Hoạt động hệ thống -->
+            <ng-container *ngIf="widget.id === 'line-chart'">
+              <div class="chart-inner-container">
+                <div class="chart-header">
+                  <div>
+                    <h4 class="chart-title">📈 Hoạt động hệ thống theo ngày</h4>
+                    <p class="chart-subtitle">{{ fromDate() }} → {{ toDate() }}</p>
+                  </div>
+                  <span class="chart-badge">{{ totalAuditInRange() }} thao tác</span>
+                </div>
+                <div class="chart-canvas-wrapper gridster-no-drag">
+                  <canvas id="lineChart"></canvas>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- 3. WIDGET: Bar Chart Phân bổ User theo Role -->
+            <ng-container *ngIf="widget.id === 'bar-chart'">
+              <div class="chart-inner-container">
+                <div class="chart-header">
+                  <div>
+                    <h4 class="chart-title">👥 Người dùng theo vai trò</h4>
+                    <p class="chart-subtitle">Phân bổ ADMIN / STAFF / CUSTOMER</p>
+                  </div>
+                  <span class="chart-badge">{{ totalUsersFromRoles() }} người</span>
+                </div>
+
+                <div class="empty-state" *ngIf="usersByRole().length === 0">
+                  <span>👤 Chưa có dữ liệu người dùng</span>
+                </div>
+
+                <div class="chart-canvas-wrapper gridster-no-drag" *ngIf="usersByRole().length > 0">
+                  <canvas id="barChart"></canvas>
+                </div>
+
+                <div class="role-legend" *ngIf="usersByRole().length > 0">
+                  <div *ngFor="let item of usersByRole()" class="role-legend-item">
+                    <span
+                      class="role-dot"
+                      [ngClass]="{
+                        'dot-admin':    item.roleName === 'ADMIN',
+                        'dot-staff':    item.roleName === 'STAFF',
+                        'dot-customer': item.roleName === 'CUSTOMER'
+                      }">
+                    </span>
+                    <span class="role-name">{{ item.roleName }}</span>
+                    <span class="role-count">{{ item.count }} người</span>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- 4. WIDGET: Bảng phân bổ sách theo danh mục -->
+            <ng-container *ngIf="widget.id === 'books-table'">
+              <div class="table-inner-container gridster-no-drag">
+                <table class="stat-table" *ngIf="booksByCategory().length > 0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Danh mục</th>
+                      <th>Số sách</th>
+                      <th>Tỷ lệ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of booksByCategory(); let i = index">
+                      <td class="td-index">{{ i + 1 }}</td>
+                      <td class="td-name">{{ item.categoryName }}</td>
+                      <td class="td-count">{{ item.count }}</td>
+                      <td class="td-bar">
+                        <div class="inline-bar">
+                          <div
+                            class="inline-bar-fill"
+                            [style.width.%]="(item.count / summary().totalBooks) * 100"
+                          ></div>
+                          <span class="inline-bar-pct">
+                            {{ ((item.count / summary().totalBooks) * 100) | number:'1.1-1' }}%
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </ng-container>
+
+          </div><!-- /widget-body -->
+
+        </gridster-item>
+      </gridster>
+    </div><!-- /#dashboardGridsterContainer -->
+
+  </div><!-- /dashboard-wrapper -->
+</div><!-- /#dashboardReport -->
