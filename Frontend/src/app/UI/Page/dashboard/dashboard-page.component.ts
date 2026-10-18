@@ -382,54 +382,75 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // Trạng thái đang xuất PDF (để hiện chữ "Đang tạo PDF..." và khóa nút bấm)
-dangTaoPDF = false;
+  dangTaoPDF = false;
 
-xuatBaoCaoPDF(): void {
-  // 1. Tìm phần tử HTML của màn hình Dashboard cần chụp
-  const phanTuCanChup = document.getElementById('dashboardReport');
-  if (!phanTuCanChup) return;
+  xuatBaoCaoPDF(): void {
+    // 1. Kiểm tra trạng thái sẵn sàng của Dashboard và dữ liệu biểu đồ
+    if (this.isLoading || this.isChartUpdating || !this.dataReady) {
+      this.notification.warning('Dữ liệu biểu đồ đang được tải hoặc cập nhật, vui lòng chờ trong giây lát...', 'Thông báo');
+      return;
+    }
 
-  this.dangTaoPDF = true; // Bật trạng thái đang xuất
+    // 2. Tìm phần tử HTML của màn hình Dashboard cần chụp
+    const phanTuCanChup = document.getElementById('dashboardReport');
+    if (!phanTuCanChup) {
+      this.notification.error('Không tìm thấy vùng dữ liệu Dashboard để xuất PDF.', 'Lỗi');
+      return;
+    }
 
-  // 2. Dùng thư viện html2canvas để chụp màn hình HTML thành Canvas
-  html2canvas(phanTuCanChup, {
-    scale: 2,                  // Tăng độ phân giải lên gấp 2 lần (giúp biểu đồ không bị mờ/vỡ hạt)
-    useCORS: true,             // Cho phép tải các icon hoặc hình ảnh từ ngoài vào
-    logging: false,            // Tắt ghi log rác trên console
-    backgroundColor: '#f8fafc' // Màu nền trắng xám của trang Dashboard
-  }).then(canvas => {
-    
-    // 3. Biến đổi Canvas vừa chụp thành dữ liệu ảnh định dạng PNG
-    const duLieuAnh = canvas.toDataURL('image/png');
+    this.dangTaoPDF = true; // Bật trạng thái đang xuất
 
-    // 4. Khởi tạo một trang tài liệu PDF mới
-    // 'l': Khổ giấy nằm ngang (Landscape) để vừa vặn chiều rộng của Dashboard
-    // 'mm': Đơn vị đo là milimet
-    // 'a4': Kích thước khổ giấy chuẩn A4 (297mm x 210mm)
-    const tepPDF = new jsPDF('l', 'mm', 'a4');
-    
-    const chieuRongTrang = tepPDF.internal.pageSize.getWidth();   // 297 mm
-    const chieuCaoTrang  = tepPDF.internal.pageSize.getHeight();  // 210 mm
+    // Đợi 1 tick ngắn để chắc chắn không còn redraw animation
+    setTimeout(() => {
+      // 3. Dùng html2canvas chụp màn hình HTML thành Canvas chất lượng cao
+      html2canvas(phanTuCanChup, {
+        scale: 2,                  // Tăng độ phân giải gấp đôi (biểu đồ sắc nét, không vỡ hạt)
+        useCORS: true,             // Cho phép tải icon và tài nguyên từ bên ngoài
+        logging: false,            // Tắt ghi log rác trên console
+        backgroundColor: '#f8fafc' // Màu nền chuẩn của Dashboard
+      }).then(canvas => {
+        // 4. Biến đổi Canvas thành dữ liệu ảnh PNG
+        const duLieuAnh = canvas.toDataURL('image/png');
 
-    // 5. Tính toán kích thước ảnh để vừa khít trang giấy (cách lề 10mm mỗi bên)
-    const chieuRongAnh = chieuRongTrang - 20; // 297 - 20 = 277 mm
-    const chieuCaoAnh  = (canvas.height * chieuRongAnh) / canvas.width; // Giữ đúng tỷ lệ gốc
+        // 5. Khởi tạo tài liệu jsPDF khổ ngang A4 (Landscape 297mm x 210mm)
+        const tepPDF = new jsPDF('l', 'mm', 'a4');
+        const chieuRongTrang = tepPDF.internal.pageSize.getWidth();   // 297 mm
+        const chieuCaoTrang  = tepPDF.internal.pageSize.getHeight();  // 210 mm
+        const leX = 10; // Lề trái/phải 10mm
+        const leY = 10; // Lề trên/dưới 10mm
+        const chieuRongKhaDung = chieuRongTrang - leX * 2; // 277 mm
+        const chieuCaoKhaDung  = chieuCaoTrang - leY * 2;  // 190 mm
 
-    // 6. Chèn bức ảnh vào trang PDF (tọa độ x=10mm, y=10mm)
-    tepPDF.addImage(duLieuAnh, 'PNG', 10, 10, chieuRongAnh, chieuCaoAnh);
+        // 6. Tính toán chiều cao ảnh tương ứng theo tỷ lệ gốc
+        const chieuCaoAnh = (canvas.height * chieuRongKhaDung) / canvas.width;
 
-    // 7. Tạo tên file tự động theo khoảng ngày đang chọn và tải về máy
-    const tenFile = `BaoCao_Dashboard_${this.fromDate}_den_${this.toDate}.pdf`;
-    tepPDF.save(tenFile);
+        let viTriY = leY;
+        let chieuCaoConLai = chieuCaoAnh;
 
-    this.dangTaoPDF = false; // Tắt trạng thái đang xuất
-    this.notification.success('Đã tải xuống file báo cáo PDF thành công!', 'Thành công');
+        // Trang đầu tiên
+        tepPDF.addImage(duLieuAnh, 'PNG', leX, viTriY, chieuRongKhaDung, chieuCaoAnh);
+        chieuCaoConLai -= chieuCaoKhaDung;
 
-  }).catch(loi => {
-    console.error('Lỗi trong quá trình xuất PDF:', loi);
-    this.dangTaoPDF = false;
-    this.notification.error('Không thể xuất file PDF. Vui lòng thử lại.', 'Lỗi');
-  });
-}
+        // 7. Hỗ trợ chia trang tự động nếu Dashboard dài vượt quá 1 trang A4
+        while (chieuCaoConLai > 0) {
+          viTriY -= chieuCaoKhaDung;
+          tepPDF.addPage();
+          tepPDF.addImage(duLieuAnh, 'PNG', leX, viTriY, chieuRongKhaDung, chieuCaoAnh);
+          chieuCaoConLai -= chieuCaoKhaDung;
+        }
+
+        // 8. Tên file chuẩn hóa theo khoảng thời gian báo cáo
+        const tenFile = `Dashboard_Report_${this.fromDate}_den_${this.toDate}.pdf`;
+        tepPDF.save(tenFile);
+
+        this.dangTaoPDF = false;
+        this.notification.success('Đã tải xuống file báo cáo PDF thành công!', 'Thành công');
+      }).catch(loi => {
+        console.error('Lỗi trong quá trình xuất PDF:', loi);
+        this.dangTaoPDF = false;
+        this.notification.error('Không thể xuất file PDF. Vui lòng thử lại.', 'Lỗi');
+      });
+    }, 100);
+  }
 
 }

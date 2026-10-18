@@ -11,18 +11,18 @@
       <span class="badge-admin">ADMIN</span>
     </div>
     <button 
-    type="button" 
-    class="btn-export-pdf" 
-    (click)="xuatBaoCaoPDF()" 
-    [disabled]="dangTaoPDF || isLoading">
-    <span *ngIf="!dangTaoPDF">📥 Xuất Báo Cáo PDF</span>
-    <span *ngIf="dangTaoPDF">⏳ Đang tạo PDF...</span>
-</button>
-
+      type="button" 
+      class="btn-export-pdf" 
+      data-html2canvas-ignore="true"
+      (click)="xuatBaoCaoPDF()" 
+      [disabled]="dangTaoPDF || isLoading">
+      <span *ngIf="!dangTaoPDF">📥 Xuất Báo Cáo PDF</span>
+      <span *ngIf="dangTaoPDF">⏳ Đang tạo PDF...</span>
+    </button>
 
   </div>
 
-  <div class="header-right">
+  <div class="header-right" data-html2canvas-ignore="true">
   <!-- Trạng thái kết nối Real-time -->
   <div class="live-status-badge" [class.live-status-badge--connected]="isRealtimeConnected">
     <span class="live-dot"></span>
@@ -129,14 +129,14 @@
         </div>
 
         <!-- Nút preset nhanh -->
-        <div class="date-presets">
+        <div class="date-presets" data-html2canvas-ignore="true">
           <button class="preset-btn" (click)="fromDate = getDefaultFromDate(7);  toDate = getTodayString(); onDateChange()">7 ngày</button>
           <button class="preset-btn" (click)="fromDate = getDefaultFromDate(14); toDate = getTodayString(); onDateChange()">14 ngày</button>
           <button class="preset-btn" (click)="fromDate = getDefaultFromDate(30); toDate = getTodayString(); onDateChange()">30 ngày</button>
         </div>
 
         <!-- Loading indicator nhỏ -->
-        <div class="chart-updating-badge" *ngIf="isChartUpdating">
+        <div class="chart-updating-badge" *ngIf="isChartUpdating" data-html2canvas-ignore="true">
           <div class="mini-spinner"></div>
           <span>Đang cập nhật...</span>
         </div>
@@ -159,7 +159,7 @@
           <span class="chart-badge">{{ totalAuditInRange }} thao tác</span>
         </div>
         <div class="chart-body">
-          <canvas id="lineChart"></canvas> //XUẤT HIỆN KHI isLoading = False
+          <canvas id="lineChart"></canvas>
         </div>
       </div>
 
