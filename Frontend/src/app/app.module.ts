@@ -27,6 +27,8 @@ import { DashboardComponent } from './UI/Page/dashboard/dashboard-page.component
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
+import { GridsterModule } from 'angular-gridster2';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -52,6 +54,7 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
     HttpClientModule,
     CommonModule,
     BrowserAnimationsModule,
+    GridsterModule,
 
     ToastrModule.forRoot({
       timeOut:3000,
