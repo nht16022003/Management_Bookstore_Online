@@ -1,7 +1,10 @@
+using System.Data;
+using System.Data.Common;
 using ManagementBTOnline_API.Data;
 using ManagementBTOnline_API.Models.DashboardManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManagementBTOnline_API.Controllers
@@ -20,28 +23,47 @@ namespace ManagementBTOnline_API.Controllers
 
         // ─────────────────────────────────────────────────────────────────
         // GET /api/Dashboard/summary
-        // Trả về tổng số sách, danh mục, người dùng, tài khoản, audit logs
+        // Tối ưu bằng Raw SQL tổng hợp một lần đếm toàn bộ bảng
         // ─────────────────────────────────────────────────────────────────
         [HttpGet("summary")]
         public async Task<IActionResult> GetSummary()
         {
-            var summary = new DashboardSummaryDTO
+            var summary = new DashboardSummaryDTO();
+
+            const string sql = @"
+                SELECT 
+                    (SELECT COUNT(*) FROM BOOKS) AS TotalBooks,
+                    (SELECT COUNT(*) FROM CATEGORIES) AS TotalCategories,
+                    (SELECT COUNT(*) FROM USERS) AS TotalUsers,
+                    (SELECT COUNT(*) FROM ACCOUNTS) AS TotalAccounts,
+                    (SELECT COUNT(*) FROM AuditLogs) AS TotalAuditLogs";
+
+            var conn = _context.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open)
             {
-                TotalBooks      = await _context.Books.CountAsync(),
-                TotalCategories = await _context.Categories.CountAsync(),
-                TotalUsers      = await _context.Users.CountAsync(),
-                TotalAccounts   = await _context.Accounts.CountAsync(),
-                TotalAuditLogs  = await _context.AuditLogs.CountAsync()
-            };
+                await conn.OpenAsync();
+            }
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            cmd.CommandType = CommandType.Text;
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                summary.TotalBooks      = reader.GetInt32(0);
+                summary.TotalCategories = reader.GetInt32(1);
+                summary.TotalUsers      = reader.GetInt32(2);
+                summary.TotalAccounts   = reader.GetInt32(3);
+                summary.TotalAuditLogs  = reader.GetInt32(4);
+            }
 
             return Ok(summary);
         }
 
         // ─────────────────────────────────────────────────────────────────
         // GET /api/Dashboard/audit-by-day
-        //   ?days=7          → N ngày gần nhất (chế độ cũ, fallback)
-        //   ?fromDate=yyyy-MM-dd&toDate=yyyy-MM-dd → khoảng ngày tùy chọn
-        // Trả về số lượng audit log theo từng ngày — dùng cho Line Chart
+        // Tối ưu bằng Raw SQL có tham số hóa @StartDate và @EndDate
         // ─────────────────────────────────────────────────────────────────
         [HttpGet("audit-by-day")]
         public async Task<IActionResult> GetAuditByDay(
@@ -49,18 +71,14 @@ namespace ManagementBTOnline_API.Controllers
             [FromQuery] DateTime? fromDate = null,
             [FromQuery] DateTime? toDate   = null)
         {
-
-            //Xác định mốc thời gian
             DateTime start;
             DateTime end;
 
             if (fromDate.HasValue && toDate.HasValue)
             {
-                //Người dùng tự chọn khoảng ngày trên DatePicker
-                start = fromDate.Value.Date; //.Date để lấy 00:00:00 
+                start = fromDate.Value.Date;
                 end   = toDate.Value.Date;
 
-                // Bảo vệ: không cho khoảng quá 90 ngày
                 if ((end - start).TotalDays > 90)
                     return BadRequest("Khoảng thời gian không được vượt quá 90 ngày.");
 
@@ -69,76 +87,230 @@ namespace ManagementBTOnline_API.Controllers
             }
             else
             {
-                //Mặc định lấy N ngày gần nhất (vd là 7 ngày trước đến hôm nay)
                 start = DateTime.Now.AddDays(-days + 1).Date;
                 end   = DateTime.Now.Date;
             }
 
-            int totalDays = (int)(end - start).TotalDays + 1;
+            var result = await QueryAuditLogsByDayAsync(start, end);
+            return Ok(result);
+        }
 
-            // Tạo danh sách toàn bộ ngày trong khoảng (kể cả ngày không có log)
+        // ─────────────────────────────────────────────────────────────────
+        // GET /api/Dashboard/books-by-category
+        // Tối ưu bằng Raw SQL kết hợp INNER JOIN và GROUP BY
+        // ─────────────────────────────────────────────────────────────────
+        [HttpGet("books-by-category")]
+        public async Task<IActionResult> GetBooksByCategory()
+        {
+            var result = await QueryBooksByCategoryAsync();
+            return Ok(result);
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // GET /api/Dashboard/users-by-role
+        // Tối ưu bằng Raw SQL phân bổ người dùng theo vai trò
+        // ─────────────────────────────────────────────────────────────────
+        [HttpGet("users-by-role")]
+        public async Task<IActionResult> GetUsersByRole()
+        {
+            var result = await QueryUsersByRoleAsync();
+            return Ok(result);
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // GET /api/Dashboard/master-data
+        // [TASK 8] Trả về một JSON response duy nhất tổng hợp cả 4 biểu đồ
+        // bằng Raw SQL tối ưu cho Master Filter
+        // ─────────────────────────────────────────────────────────────────
+        [HttpGet("master-data")]
+        public async Task<IActionResult> GetMasterDashboardData(
+            [FromQuery] DateTime? fromDate = null,
+            [FromQuery] DateTime? toDate   = null)
+        {
+            DateTime start = fromDate.HasValue ? fromDate.Value.Date : DateTime.Now.AddDays(-6).Date;
+            DateTime end   = toDate.HasValue ? toDate.Value.Date : DateTime.Now.Date;
+
+            if (start > end)
+                return BadRequest("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.");
+
+            if ((end - start).TotalDays > 90)
+                return BadRequest("Khoảng thời gian không được vượt quá 90 ngày.");
+
+            // 1. Query Summary qua Raw SQL
+            var summary = new DashboardSummaryDTO();
+            const string sqlSummary = @"
+                SELECT 
+                    (SELECT COUNT(*) FROM BOOKS) AS TotalBooks,
+                    (SELECT COUNT(*) FROM CATEGORIES) AS TotalCategories,
+                    (SELECT COUNT(*) FROM USERS) AS TotalUsers,
+                    (SELECT COUNT(*) FROM ACCOUNTS) AS TotalAccounts,
+                    (SELECT COUNT(*) FROM AuditLogs) AS TotalAuditLogs";
+
+            var conn = _context.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open)
+            {
+                await conn.OpenAsync();
+            }
+
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = sqlSummary;
+                cmd.CommandType = CommandType.Text;
+                using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    summary.TotalBooks      = reader.GetInt32(0);
+                    summary.TotalCategories = reader.GetInt32(1);
+                    summary.TotalUsers      = reader.GetInt32(2);
+                    summary.TotalAccounts   = reader.GetInt32(3);
+                    summary.TotalAuditLogs  = reader.GetInt32(4);
+                }
+            }
+
+            // 2. Query Audit Log by Day qua Raw SQL có tham số hóa
+            var auditByDay = await QueryAuditLogsByDayAsync(start, end);
+
+            // 3. Query Books by Category qua Raw SQL
+            var booksByCategory = await QueryBooksByCategoryAsync();
+
+            // 4. Query Users by Role qua Raw SQL
+            var usersByRole = await QueryUsersByRoleAsync();
+
+            return Ok(new
+            {
+                summary,
+                auditByDay,
+                booksByCategory,
+                usersByRole
+            });
+        }
+
+        // ── Helper Methods thực thi Raw SQL tham số hóa ──────────────────
+
+        private async Task<List<AuditLogByDayDTO>> QueryAuditLogsByDayAsync(DateTime start, DateTime end)
+        {
+            int totalDays = (int)(end - start).TotalDays + 1;
             var allDays = Enumerable.Range(0, totalDays)
                 .Select(i => start.AddDays(i))
                 .ToList();
 
-            // Query audit logs trong khoảng thời gian, group by ngày
-            var logsFromDb = await _context.AuditLogs
-                .Where(x => x.CreatedAt >= start && x.CreatedAt <= end.AddDays(1).AddTicks(-1))
-                .GroupBy(x => x.CreatedAt.Date)
-                .Select(g => new { Date = g.Key, Count = g.Count() })
-                .ToListAsync();
+            var logsFromDb = new Dictionary<DateTime, int>();
 
-            // Left join: đảm bảo ngày không có log vẫn xuất hiện với Count = 0
-            var result = allDays.Select(day => new AuditLogByDayDTO
+            const string sql = @"
+                SELECT CAST(CreatedAt AS DATE) AS LogDate, COUNT(*) AS TotalCount
+                FROM AuditLogs
+                WHERE CreatedAt >= @StartDate AND CreatedAt <= @EndDate
+                GROUP BY CAST(CreatedAt AS DATE)
+                ORDER BY LogDate ASC";
+
+            var conn = _context.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open)
+            {
+                await conn.OpenAsync();
+            }
+
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+
+                var pStart = cmd.CreateParameter();
+                pStart.ParameterName = "@StartDate";
+                pStart.Value = start;
+                cmd.Parameters.Add(pStart);
+
+                var pEnd = cmd.CreateParameter();
+                pEnd.ParameterName = "@EndDate";
+                pEnd.Value = end.AddDays(1).AddTicks(-1);
+                cmd.Parameters.Add(pEnd);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var date = reader.GetDateTime(0).Date;
+                    var count = reader.GetInt32(1);
+                    logsFromDb[date] = count;
+                }
+            }
+
+            return allDays.Select(day => new AuditLogByDayDTO
             {
                 Date  = day.ToString("dd/MM"),
-                Count = logsFromDb.FirstOrDefault(l => l.Date == day)?.Count ?? 0
+                Count = logsFromDb.TryGetValue(day, out var count) ? count : 0
             }).ToList();
-
-            return Ok(result);
         }
 
-     
-        // GET /api/Dashboard/books-by-category
-        // Trả về số lượng sách theo từng danh mục
-        // Dùng cho biểu đồ tròn (Donut Chart)
-     
-        [HttpGet("books-by-category")]
-        public async Task<IActionResult> GetBooksByCategory()
+        private async Task<List<BookByCategoryDTO>> QueryBooksByCategoryAsync()
         {
-            var result = await _context.Categories
-                .Select(c => new BookByCategoryDTO
-                {
-                    CategoryName = c.categoryName ?? "Không xác định",
-                    Count        = c.Book.Count()
-                })
-                .Where(x => x.Count > 0)   // Chỉ hiện danh mục có sách
-                .OrderByDescending(x => x.Count)
-                .ToListAsync();
+            var result = new List<BookByCategoryDTO>();
 
-            return Ok(result);
+            const string sql = @"
+                SELECT c.CATEGORY_NAME AS CategoryName, COUNT(b.ID_BOOK) AS [Count]
+                FROM CATEGORIES c
+                INNER JOIN BOOKS b ON c.ID_CATEGORY = b.ID_CATEGORY
+                GROUP BY c.CATEGORY_NAME
+                HAVING COUNT(b.ID_BOOK) > 0
+                ORDER BY [Count] DESC";
+
+            var conn = _context.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open)
+            {
+                await conn.OpenAsync();
+            }
+
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    result.Add(new BookByCategoryDTO
+                    {
+                        CategoryName = reader.IsDBNull(0) ? "Không xác định" : reader.GetString(0),
+                        Count = reader.GetInt32(1)
+                    });
+                }
+            }
+
+            return result;
         }
 
-        
-        // GET /api/Dashboard/users-by-role
-        // Trả về số lượng người dùng theo từng vai trò
-        // Dùng cho Bar Chart phân bổ User
-     
-        [HttpGet("users-by-role")]
-        public async Task<IActionResult> GetUsersByRole()
+        private async Task<List<UserByRoleDTO>> QueryUsersByRoleAsync()
         {
-            var result = await _context.Users
-                .Where(u => u.Role != null)          // Chỉ lấy user đã có role
-                .GroupBy(u => u.Role.roleName)
-                .Select(g => new UserByRoleDTO
-                {
-                    RoleName = g.Key,
-                    Count    = g.Count()
-                })
-                .OrderByDescending(x => x.Count)
-                .ToListAsync();
+            var result = new List<UserByRoleDTO>();
 
-            return Ok(result);
+            const string sql = @"
+                SELECT r.ROLE_NAME AS RoleName, COUNT(u.ID_USER) AS [Count]
+                FROM USERS u
+                INNER JOIN ROLES r ON u.ID_ROLE = r.ID_ROLE
+                GROUP BY r.ROLE_NAME
+                ORDER BY [Count] DESC";
+
+            var conn = _context.Database.GetDbConnection();
+            if (conn.State != ConnectionState.Open)
+            {
+                await conn.OpenAsync();
+            }
+
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = sql;
+                cmd.CommandType = CommandType.Text;
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    result.Add(new UserByRoleDTO
+                    {
+                        RoleName = reader.IsDBNull(0) ? "Không xác định" : reader.GetString(0),
+                        Count = reader.GetInt32(1)
+                    });
+                }
+            }
+
+            return result;
         }
     }
 }
