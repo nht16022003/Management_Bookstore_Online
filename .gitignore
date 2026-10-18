@@ -19,5 +19,11 @@ obj/
 # Environment / secrets
 .env
 
-
 Frontend.zip
+
+# Documents and reports
+*.md
+*.docx
+*.pdf
+~$*
+docs/
