@@ -92,10 +92,10 @@ builder.Services.AddCors(options =>
 
 
 //Build app
-// Add services to the container.
-var app = builder.Build(); //Tạo app
+var app = builder.Build();
 
-app.UseCors("AllowAngular");
+// Configure the HTTP request pipeline.
+app.UseCors("AngularPolicy");
 
 //Map endpoint của SignaLR Hub
 app.MapHub<DashboardHub>("/hub/dashboard");
@@ -106,7 +106,6 @@ app.UseStaticFiles(); //Mục đích: cho phép Angular/Browser truy cập file 
 
 app.UseMiddleware<GlobalExceptionMiddleware>(); //middlware
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -115,8 +114,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseCors("AngularPolicy");
 
 app.UseAuthentication();
 

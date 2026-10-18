@@ -1,4 +1,4 @@
-﻿using ManagementBTOnline_API.Data;
+using ManagementBTOnline_API.Data;
 using ManagementBTOnline_API.Models.AccountManagement;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using ManagementBTOnline_API.Filters;
-
+using ManagementBTOnline_API.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ManagementBTOnline_API.Controllers
 {
@@ -26,11 +27,13 @@ namespace ManagementBTOnline_API.Controllers
         private readonly PasswordHasher<AccountModel> _passwordHasher
             = new PasswordHasher<AccountModel>();
         private readonly IConfiguration _configuration;
+        private readonly IHubContext<DashboardHub> _hubContext;
 
-        public AccountController(ApplicationDBContext context, IConfiguration configuration)
+        public AccountController(ApplicationDBContext context, IConfiguration configuration, IHubContext<DashboardHub> hubContext)
         {
             _context = context;
             _configuration = configuration;
+            _hubContext = hubContext;
         }
 
         //GenerateJwtToken()
@@ -98,6 +101,11 @@ namespace ManagementBTOnline_API.Controllers
             var data = await _context.Accounts.Include(x => x.User).ThenInclude(b => b.Role).
                 Where(x => x.userName == dto.userName)
                .FirstOrDefaultAsync(); //Tìm account 
+
+            if (data == null)
+            {
+                return Unauthorized("Sai tài khoản hoặc mật khẩu");
+            }
 
             var passwordHasher = new PasswordHasher<AccountModel>();
 
@@ -211,6 +219,18 @@ namespace ManagementBTOnline_API.Controllers
 
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
+
+            // Phát sóng tín hiệu real-time tới Dashboard client khi có user mới đăng ký
+            await _hubContext.Clients.All.SendAsync("ReceiveDashboardUpdate", new
+            {
+                action = "CREATE",
+                controllerName = "Account",
+                actionName = "register",
+                description = $"Đăng ký tài khoản mới: {user.user_Name}",
+                userName = user.user_Name,
+                dateString = DateTime.Now.ToString("dd/MM"),
+                createdAt = DateTime.Now
+            });
 
             return Ok(accountDTO);
         }

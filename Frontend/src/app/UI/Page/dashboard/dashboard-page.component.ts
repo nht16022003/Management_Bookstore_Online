@@ -63,42 +63,53 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.initSignalR();
   }
 
+  private isConnectedSub!: Subscription;
+
   //Khởi tạo và lắng nghe kết nối real time
-  private initSignalR():void{
+  private initSignalR(): void {
     this.signalrService.startConnection();
 
-    this.signalrService.isConnected$.subscribe(status => {
+    this.isConnectedSub = this.signalrService.isConnected$.subscribe(status => {
       this.isRealtimeConnected = status;
-      // Bắt sự kiện có thao tác mới phát sinh trong hệ thống:
+    });
+
+    // Bắt sự kiện có thao tác mới phát sinh trong hệ thống:
     this.signalrSub = this.signalrService.dashboardUpdate$.subscribe(
       (msg: DashboardRealtimeMessage) => {
         this.handleRealtimeUpdate(msg);
       }
-    )
-  
-  })}
+    );
+  }
 
-
-  // 2. Xử lý cập nhật số liệu ngay tại chỗ (In-place)
+  // 2. Xử lý cập nhật số liệu từ Dashboard API hiện có (giữ nguyên bộ lọc thời gian)
   private handleRealtimeUpdate(msg: DashboardRealtimeMessage): void {
-    // A. Tăng tổng số AuditLog trên Stat Card
-    this.summary.totalAuditLogs++;
+    // A. Tải lại Summary chính xác từ API (cập nhật số lượng sách, categories, users, audit logs)
+    this.dashboardService.getSummary().subscribe(summary => {
+      this.summary = summary;
+    });
 
-    // B. Tìm ngày hôm nay trong mảng Line Chart để tăng số lượng
-    const todayStr = this.getTodayString();
-    const todayFormatted = todayStr.split('-')[2] + '/' + todayStr.split('-')[1]; // vd: "28/09"
-    
-    const todayItem = this.auditByDay.find(d => d.date === todayFormatted || d.date === msg.dateString);
-    if (todayItem) {
-      todayItem.count++;
-    } else {
-      this.auditByDay.push({ date: msg.dateString, count: 1 });
+    // B. Tải lại dữ liệu biểu đồ audit theo đúng bộ lọc thời gian đang áp dụng (fromDate, toDate)
+    this.dashboardService.getAuditByDay(7, this.fromDate, this.toDate).subscribe(data => {
+      this.auditByDay = data;
+      this.updateLineChart();
+    });
+
+    // C. Cập nhật bảng phân bổ sách nếu thao tác liên quan tới sách hoặc danh mục
+    if (!msg.controllerName || msg.controllerName === 'Book' || msg.controllerName === 'Category') {
+      this.dashboardService.getBooksByCategory().subscribe(books => {
+        this.booksByCategory = books;
+      });
     }
 
-    // C. Cập nhật biểu đồ chuyển động ngay lập tức!
-    this.updateLineChart();
+    // D. Cập nhật biểu đồ vai trò người dùng nếu liên quan tới Account/User
+    if (msg.controllerName === 'Account' || msg.controllerName === 'User') {
+      this.dashboardService.getUsersByRole().subscribe(roles => {
+        this.usersByRole = roles;
+        this.renderBarChart();
+      });
+    }
 
-    // D. Bắn thông báo nhẹ góc màn hình
+    // E. Bắn thông báo nhẹ góc màn hình
     this.notification.info(
       `${msg.userName} vừa thực hiện: ${msg.description}`,
       '⚡ Hoạt động mới'
@@ -113,6 +124,15 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Hủy đăng ký SignalR để tránh rò rỉ bộ nhớ
+    if (this.signalrSub) {
+      this.signalrSub.unsubscribe();
+    }
+    if (this.isConnectedSub) {
+      this.isConnectedSub.unsubscribe();
+    }
+    this.signalrService.stopConnection();
+
     // Dọn dẹp instance chart khi rời trang, tránh memory leak
     if (this.lineChart) { this.lineChart.destroy(); this.lineChart = null; }
     if (this.barChart) { this.barChart.destroy(); this.barChart = null; }
