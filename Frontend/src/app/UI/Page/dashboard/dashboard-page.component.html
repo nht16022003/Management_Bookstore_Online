@@ -15,18 +15,18 @@
       class="btn-export-pdf" 
       data-html2canvas-ignore="true"
       (click)="xuatBaoCaoPDF()" 
-      [disabled]="dangTaoPDF || isLoading">
-      <span *ngIf="!dangTaoPDF">📥 Xuất Báo Cáo PDF</span>
-      <span *ngIf="dangTaoPDF">⏳ Đang tạo PDF...</span>
+      [disabled]="dangTaoPDF() || isLoading()">
+      <span *ngIf="!dangTaoPDF()">📥 Xuất Báo Cáo PDF</span>
+      <span *ngIf="dangTaoPDF()">⏳ Đang tạo PDF...</span>
     </button>
 
   </div>
 
   <div class="header-right" data-html2canvas-ignore="true">
   <!-- Trạng thái kết nối Real-time -->
-  <div class="live-status-badge" [class.live-status-badge--connected]="isRealtimeConnected">
+  <div class="live-status-badge" [class.live-status-badge--connected]="isRealtimeConnected()">
     <span class="live-dot"></span>
-    <span class="live-text">{{ isRealtimeConnected ? 'LIVE Real-time' : 'Connecting...' }}</span>
+    <span class="live-text">{{ isRealtimeConnected() ? 'LIVE Real-time' : 'Connecting...' }}</span>
   </div>
   <span class="badge-admin">ADMIN</span>
 </div>
@@ -34,13 +34,13 @@
 
 
   <!-- ══ LOADING ═════════════════════════════════════════════════════════ -->
-  <div class="loading-overlay" *ngIf="isLoading">
+  <div class="loading-overlay" *ngIf="isLoading()">
     <div class="spinner-ring"></div>
     <p>Đang tải dữ liệu...</p>
   </div>
 
-  <!-- ══ NỘI DUNG CHÍNH (hiện sau khi load xong isLoading = False) ════════════════════════ -->
-  <div *ngIf="!isLoading">
+  <!-- ══ NỘI DUNG CHÍNH (hiện sau khi load xong isLoading() = False) ════════════════════════ -->
+  <div *ngIf="!isLoading()">
 
     <!-- ── STAT CARDS ─────────────────────────────────────────────────── -->
     <div class="stat-grid">
@@ -49,7 +49,7 @@
       <div class="stat-card stat-card--blue">
         <div class="stat-icon">📚</div>
         <div class="stat-info">
-          <span class="stat-value">{{ summary.totalBooks }}</span>
+          <span class="stat-value">{{ summary().totalBooks }}</span>
           <span class="stat-label">Tổng số sách</span>
         </div>
         <div class="stat-bg-icon">📚</div>
@@ -59,7 +59,7 @@
       <div class="stat-card stat-card--green">
         <div class="stat-icon">🏷️</div>
         <div class="stat-info">
-          <span class="stat-value">{{ summary.totalCategories }}</span>
+          <span class="stat-value">{{ summary().totalCategories }}</span>
           <span class="stat-label">Danh mục</span>
         </div>
         <div class="stat-bg-icon">🏷️</div>
@@ -69,7 +69,7 @@
       <div class="stat-card stat-card--purple">
         <div class="stat-icon">👥</div>
         <div class="stat-info">
-          <span class="stat-value">{{ summary.totalUsers }}</span>
+          <span class="stat-value">{{ summary().totalUsers }}</span>
           <span class="stat-label">Người dùng</span>
         </div>
         <div class="stat-bg-icon">👥</div>
@@ -79,7 +79,7 @@
       <div class="stat-card stat-card--orange">
         <div class="stat-icon">📋</div>
         <div class="stat-info">
-          <span class="stat-value">{{ summary.totalAuditLogs }}</span>
+          <span class="stat-value">{{ summary().totalAuditLogs }}</span>
           <span class="stat-label">Nhật ký hoạt động</span>
         </div>
         <div class="stat-bg-icon">📋</div>
@@ -104,8 +104,8 @@
           <input
             id="fromDateInput"
             type="date"
-            [(ngModel)]="fromDate"
-            [max]="toDate"
+            [(ngModel)]="fromDateValue"
+            [max]="toDateValue"
             (change)="onDateChange()"
             class="date-input"
           >
@@ -120,8 +120,8 @@
           <input
             id="toDateInput"
             type="date"
-            [(ngModel)]="toDate"
-            [min]="fromDate"
+            [(ngModel)]="toDateValue"
+            [min]="fromDateValue"
             [max]="getTodayString()"
             (change)="onDateChange()"
             class="date-input"
@@ -130,13 +130,13 @@
 
         <!-- Nút preset nhanh -->
         <div class="date-presets" data-html2canvas-ignore="true">
-          <button class="preset-btn" (click)="fromDate = getDefaultFromDate(7);  toDate = getTodayString(); onDateChange()">7 ngày</button>
-          <button class="preset-btn" (click)="fromDate = getDefaultFromDate(14); toDate = getTodayString(); onDateChange()">14 ngày</button>
-          <button class="preset-btn" (click)="fromDate = getDefaultFromDate(30); toDate = getTodayString(); onDateChange()">30 ngày</button>
+          <button class="preset-btn" (click)="setPresetDays(7)">7 ngày</button>
+          <button class="preset-btn" (click)="setPresetDays(14)">14 ngày</button>
+          <button class="preset-btn" (click)="setPresetDays(30)">30 ngày</button>
         </div>
 
         <!-- Loading indicator nhỏ -->
-        <div class="chart-updating-badge" *ngIf="isChartUpdating" data-html2canvas-ignore="true">
+        <div class="chart-updating-badge" *ngIf="isChartUpdating()" data-html2canvas-ignore="true">
           <div class="mini-spinner"></div>
           <span>Đang cập nhật...</span>
         </div>
@@ -154,9 +154,9 @@
         <div class="chart-header">
           <div>
             <h3 class="chart-title">📈 Hoạt động hệ thống</h3>
-            <p class="chart-subtitle">{{ fromDate }} → {{ toDate }}</p>
+            <p class="chart-subtitle">{{ fromDate() }} → {{ toDate() }}</p>
           </div>
-          <span class="chart-badge">{{ totalAuditInRange }} thao tác</span>
+          <span class="chart-badge">{{ totalAuditInRange() }} thao tác</span>
         </div>
         <div class="chart-body">
           <canvas id="lineChart"></canvas>
@@ -170,21 +170,21 @@
             <h3 class="chart-title">👥 Người dùng theo vai trò</h3>
             <p class="chart-subtitle">Phân bổ ADMIN / STAFF / CUSTOMER</p>
           </div>
-          <span class="chart-badge">{{ totalUsersFromRoles }} người</span>
+          <span class="chart-badge">{{ totalUsersFromRoles() }} người</span>
         </div>
 
         <!-- Empty state nếu chưa có dữ liệu -->
-        <div class="empty-state" *ngIf="usersByRole.length === 0">
+        <div class="empty-state" *ngIf="usersByRole().length === 0">
           <span>👤 Chưa có dữ liệu người dùng</span>
         </div>
 
-        <div class="chart-body" *ngIf="usersByRole.length > 0">
+        <div class="chart-body" *ngIf="usersByRole().length > 0">
           <canvas id="barChart"></canvas>
         </div>
 
         <!-- Legend thủ công màu theo Role -->
-        <div class="role-legend" *ngIf="usersByRole.length > 0">
-          <div *ngFor="let item of usersByRole" class="role-legend-item">
+        <div class="role-legend" *ngIf="usersByRole().length > 0">
+          <div *ngFor="let item of usersByRole()" class="role-legend-item">
             <span
               class="role-dot"
               [ngClass]="{
@@ -204,7 +204,7 @@
 
 
     <!-- ── BẢNG PHÂN BỔ SÁCH ───────────────────────────────────────────── -->
-    <div class="table-card" *ngIf="booksByCategory.length > 0">
+    <div class="table-card" *ngIf="booksByCategory().length > 0">
       <div class="chart-header">
         <h3 class="chart-title">📑 Chi tiết phân bổ sách theo danh mục</h3>
       </div>
@@ -219,7 +219,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of booksByCategory; let i = index">
+          <tr *ngFor="let item of booksByCategory(); let i = index">
             <td class="td-index">{{ i + 1 }}</td>
             <td class="td-name">{{ item.categoryName }}</td>
             <td class="td-count">{{ item.count }}</td>
@@ -227,10 +227,10 @@
               <div class="inline-bar">
                 <div
                   class="inline-bar-fill"
-                  [style.width.%]="(item.count / summary.totalBooks) * 100"
+                  [style.width.%]="(item.count / summary().totalBooks) * 100"
                 ></div>
                 <span class="inline-bar-pct">
-                  {{ ((item.count / summary.totalBooks) * 100) | number:'1.1-1' }}%
+                  {{ ((item.count / summary().totalBooks) * 100) | number:'1.1-1' }}%
                 </span>
               </div>
             </td>
@@ -239,7 +239,7 @@
       </table>
     </div>
 
-  </div><!-- /ngIf !isLoading -->
+  </div><!-- /ngIf !isLoading() -->
 
 </div><!-- /dashboard-wrapper -->
 
